@@ -18,7 +18,7 @@ describe('timeline viewport', () => {
 
   test('selects an event and exposes its date and description accessibly', () => {
     render(<App />);
-    const viewport = screen.getByRole('img', { name: /cosmere chronology/i });
+    const viewport = screen.getByRole('group', { name: /cosmere chronology/i });
     const event = within(viewport).getByRole('button', {
       name: /-1050.*adonalsium creates roshar/i,
     });

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { createTimelineViewModel } from '../timeline/timelineProjection';
 
@@ -120,6 +120,7 @@ function SelectionCard({ event, color, x, y, plot }) {
 }
 
 function TimelineViewport({ systems, events, activeSystemIds, viewport, selectedEventId, onSelectEvent, onZoom }) {
+  const descriptionId = useId();
   const model = useMemo(
     () => createTimelineViewModel({ systems, events, activeSystemIds, viewport, width: WIDTH }),
     [systems, events, activeSystemIds, viewport]
@@ -136,15 +137,18 @@ function TimelineViewport({ systems, events, activeSystemIds, viewport, selected
     <ViewportFrame>
       <Svg
         viewBox={`0 0 ${model.width} ${model.height}`}
-        role="img"
+        role="group"
         aria-label={`Cosmere chronology from ${viewport.start} to ${viewport.end}`}
+        aria-describedby={descriptionId}
         onWheel={(wheelEvent) => {
           wheelEvent.preventDefault();
           onZoom(wheelEvent.deltaY < 0 ? 0.8 : 1.25);
         }}
       >
         <title>Cosmere chronology</title>
-        <desc>A linear numeric chronology. Select an event marker to read its date and description.</desc>
+        <desc id={descriptionId}>
+          A linear numeric chronology. Select an event marker to read its date and description.
+        </desc>
         <rect width={model.width} height={model.height} fill="#172021" rx="8" />
 
         <g aria-hidden="true">
@@ -212,9 +216,10 @@ const Svg = styled.svg`
   min-width: 720px;
   height: auto;
 
-  [role='button']:focus { outline: none; }
-  [role='button']:focus circle,
-  [role='button']:focus line { filter: drop-shadow(0 0 4px #f4c36a); }
+  [role='button']:focus-visible { outline: none; }
+  [role='button']:focus-visible circle,
+  [role='button']:focus-visible line,
+  [role='button']:focus-visible path { filter: drop-shadow(0 0 4px #f4c36a); }
 `;
 
 export default TimelineViewport;
