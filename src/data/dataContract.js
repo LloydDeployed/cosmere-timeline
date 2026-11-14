@@ -85,8 +85,8 @@ const normalizeSystems = (systems) =>
     primaryWork: system.primary ?? null,
   }));
 
-const normalizeEvent = (event, index) => ({
-  id: event.id ?? `event-${index + 1}`,
+const normalizeEvent = (event) => ({
+  id: event.id,
   date: normalizeTimelineDate(event.date ?? event.year),
   location: { system: event.location?.system ?? event.system },
   description: event.description ?? event.events,

@@ -31,6 +31,29 @@ describe('timeline data contract', () => {
     );
   });
 
+  test('keeps persisted event IDs stable when events are reordered', () => {
+    const canonical = normalizeCanonicalData({ books, shards, systems, events });
+    const reordered = normalizeCanonicalData({
+      books,
+      shards,
+      systems,
+      events: [...events].reverse(),
+    });
+
+    expect(reordered.events.map((event) => event.id)).toEqual(
+      canonical.events.map((event) => event.id).reverse()
+    );
+  });
+
+  test('rejects duplicate event IDs with an actionable path', () => {
+    const canonical = normalizeCanonicalData({ books, shards, systems, events });
+    canonical.events[1].id = canonical.events[0].id;
+
+    expect(() => validateCanonicalData(canonical)).toThrow(
+      /events\[1\]\.id duplicates "event-001"/
+    );
+  });
+
   test('models point dates without blocking ranges or ordering-only dates', () => {
     expect(normalizeTimelineDate(42)).toEqual({
       kind: 'point',

@@ -1,10 +1,12 @@
 [
   {
+    "id": "event-001",
     "year": -1050,
     "system": "Cosmere",
     "events": "Adonalsium creates Roshar"
   },
   {
+    "id": "event-002",
     "year": 0,
     "system": "Yolen",
     "events": "Shattering of Adonalsium",
@@ -26,6 +28,7 @@
     ]
   },
   {
+    "id": "event-003",
     "year": 1000,
     "system": "Sel",
     "events": "Odium splinters Devotion and Dominion and locks their power in the Cognitive Realm",
@@ -33,6 +36,7 @@
     "shards": ["Devotion", "Dominion", "Odium"]
   },
   {
+    "id": "event-004",
     "year": 2000,
     "system": "Threnody",
     "events": "Odium mortally wounds Ambition",
@@ -40,6 +44,7 @@
     "shards": ["Ambition", "Odium"]
   },
   {
+    "id": "event-005",
     "year": 6000,
     "system": "Roshar",
     "events": "The Oathpact is broken",
@@ -47,6 +52,7 @@
     "shards": []
   },
   {
+    "id": "event-006",
     "year": 8111,
     "system": "Taldain",
     "events": "White Sand takes place",
@@ -54,6 +60,7 @@
     "shards": []
   },
   {
+    "id": "event-007",
     "year": 8801,
     "system": "Sel",
     "events": "The Fjordell First Empire Collapses; Fjordell adopts the Shu-Dereth religion",
@@ -61,6 +68,7 @@
     "shards": []
   },
   {
+    "id": "event-008",
     "year": 8901,
     "system": "Sel",
     "events": "Beginning of Sel's Late Era",
@@ -68,6 +76,7 @@
     "shards": []
   },
   {
+    "id": "event-009",
     "year": 8906.6,
     "system": "Roshar",
     "events": "The Recreance",
@@ -75,6 +84,7 @@
     "shards": []
   },
   {
+    "id": "event-010",
     "year": 8956.6,
     "system": "Roshar",
     "events": "Tanavast's death happens before this point",
@@ -82,6 +92,7 @@
     "shards": ["Honor"]
   },
   {
+    "id": "event-011",
     "year": 9001,
     "system": "Sel",
     "events": "Baron Shuden's family moves to Arelon",
@@ -89,6 +100,7 @@
     "shards": []
   },
   {
+    "id": "event-012",
     "year": 9041,
     "system": "Sel",
     "events": "Dilaf is born in Fjordell",
@@ -96,6 +108,7 @@
     "shards": []
   },
   {
+    "id": "event-013",
     "year": 9051,
     "system": "Sel",
     "events": "Dilaf joins the Dakhor Monastery",
@@ -103,6 +116,7 @@
     "shards": []
   },
   {
+    "id": "event-014",
     "year": 9061,
     "system": "Sel",
     "events": "Teod expels all Derethi priests from its territory",
@@ -110,6 +124,7 @@
     "shards": []
   },
   {
+    "id": "event-015",
     "year": 9081,
     "system": "Sel",
     "events": "Hrathen joins the Derethi priesthood and spends a short time at Dakhor. Dilaf leaves Dakhor for Arelon",
@@ -117,6 +132,7 @@
     "shards": []
   },
   {
+    "id": "event-016",
     "year": 9086,
     "system": "Sel",
     "events": "Sarene is born",
@@ -124,6 +140,7 @@
     "shards": []
   },
   {
+    "id": "event-017",
     "year": 9091,
     "system": "Sel",
     "events": "Dilaf's wife is made Hoed",
@@ -131,6 +148,7 @@
     "shards": []
   },
   {
+    "id": "event-018",
     "year": 9096,
     "system": "Sel",
     "events": "Seinalan is made patriarch of Shu-Korath in response to Wulfden becoming Wyrn. Dreok Crushthroat attempts to take the throne of Arelon but is defeated",
@@ -138,6 +156,7 @@
     "shards": []
   },
   {
+    "id": "event-019",
     "year": 9099,
     "system": "Sel",
     "events": "Raoden's mother dies",
@@ -145,6 +164,7 @@
     "shards": []
   },
   {
+    "id": "event-020",
     "year": 9101,
     "system": "Sel",
     "events": "The Reod occurs",
@@ -152,6 +172,7 @@
     "shards": []
   },
   {
+    "id": "event-021",
     "year": 9106,
     "system": "Sel",
     "events": "Adien taken by the Shaod",
@@ -159,6 +180,7 @@
     "shards": []
   },
   {
+    "id": "event-022",
     "year": 9109,
     "system": "Sel",
     "events": "Soine, daughter of Telrii, taken by the Shaod",
@@ -166,6 +188,7 @@
     "shards": []
   },
   {
+    "id": "event-023",
     "year": 9111,
     "system": "Sel",
     "events": "Raoden taken by the Shaod. Sarene and Hrathen arrive in Arelon",
@@ -173,6 +196,7 @@
     "shards": []
   },
   {
+    "id": "event-024",
     "year": 9121,
     "system": "Sel",
     "events": "Elantris 2",
@@ -180,6 +204,7 @@
     "shards": []
   },
   {
+    "id": "event-025",
     "year": 9131,
     "system": "Sel",
     "events": "Elantris 3",
@@ -187,6 +212,7 @@
     "shards": []
   },
   {
+    "id": "event-026",
     "year": 9301,
     "system": "Sel",
     "events": "The Emperor's Soul takes place.",
@@ -194,6 +220,7 @@
     "shards": []
   },
   {
+    "id": "event-027",
     "year": 9601,
     "system": "Scadrial",
     "events": "Rashek uses the power of the Well of Ascension",
@@ -201,6 +228,7 @@
     "shards": []
   },
   {
+    "id": "event-028",
     "year": 10426,
     "system": "Nalthis",
     "events": "Discovery of Awakening",
@@ -208,6 +236,7 @@
     "shards": []
   },
   {
+    "id": "event-029",
     "date": {
       "kind": "point",
       "value": 10436.3,
@@ -220,6 +249,7 @@
     "shards": []
   },
   {
+    "id": "event-030",
     "year": 10526,
     "system": "Nalthis",
     "events": "The Manywar",
@@ -227,6 +257,7 @@
     "shards": []
   },
   {
+    "id": "event-031",
     "year": 10585,
     "system": "Scadrial",
     "events": "Kelsier is born",
@@ -234,6 +265,7 @@
     "shards": []
   },
   {
+    "id": "event-032",
     "year": 10606,
     "system": "Scadrial",
     "events": "Vin is born",
@@ -241,6 +273,7 @@
     "shards": []
   },
   {
+    "id": "event-033",
     "year": 10619,
     "system": "Scadrial",
     "events": "Kelsier captured",
@@ -248,6 +281,7 @@
     "shards": []
   },
   {
+    "id": "event-034",
     "year": 10620,
     "system": "Scadrial",
     "events": "Kelsier escapes the Pits of Hathsin; Kelsier trains with Gemmel",
@@ -255,6 +289,7 @@
     "shards": []
   },
   {
+    "id": "event-035",
     "year": 10621,
     "system": "Scadrial",
     "events": "Reen and Vin arrive in Luthadel; Reen abandons Vin",
@@ -262,6 +297,7 @@
     "shards": []
   },
   {
+    "id": "event-036",
     "year": 10622,
     "system": "Scadrial",
     "events": "Kelsier arrives in Luthadel",
@@ -269,6 +305,7 @@
     "shards": []
   },
   {
+    "id": "event-037",
     "year": 10623,
     "system": "Scadrial",
     "events": "Kelsier dies, The Lord Ruler is killed",
@@ -276,6 +313,7 @@
     "shards": []
   },
   {
+    "id": "event-038",
     "year": 10624,
     "system": "Scadrial",
     "events": "Siege of Luthadel",
@@ -283,6 +321,7 @@
     "shards": []
   },
   {
+    "id": "event-039",
     "year": 10625,
     "system": "Scadrial",
     "events": "Ruin is released",
@@ -290,6 +329,7 @@
     "shards": ["Ruin"]
   },
   {
+    "id": "event-040",
     "year": 10626,
     "system": "Scadrial",
     "events": "Sazed ascends to become Harmony",
@@ -297,6 +337,7 @@
     "shards": ["Harmony"]
   },
   {
+    "id": "event-041",
     "year": 10826,
     "system": "Nalthis",
     "events": "The Pahn Kal Rebellion",
@@ -304,6 +345,7 @@
     "shards": []
   },
   {
+    "id": "event-042",
     "year": 10836,
     "system": "Nalthis",
     "events": "(future Nightblood book)",
@@ -311,6 +353,7 @@
     "shards": []
   },
   {
+    "id": "event-043",
     "year": 10850,
     "system": "Threnody",
     "events": "Silence hunts Chesterton Divide",
@@ -318,6 +361,7 @@
     "shards": []
   },
   {
+    "id": "event-044",
     "year": 10918.1,
     "system": "Roshar",
     "events": "Szeth is born",
@@ -325,6 +369,7 @@
     "shards": []
   },
   {
+    "id": "event-045",
     "year": 10919.2,
     "system": "Roshar",
     "events": "Jasnah is born",
@@ -332,6 +377,7 @@
     "shards": []
   },
   {
+    "id": "event-046",
     "year": 10926.9,
     "system": "Roshar",
     "events": "Elhokar is born",
@@ -339,6 +385,7 @@
     "shards": []
   },
   {
+    "id": "event-047",
     "year": 10935.7,
     "system": "Roshar",
     "events": "Kaladin is born",
@@ -346,6 +393,7 @@
     "shards": []
   },
   {
+    "id": "event-048",
     "year": 10937.9,
     "system": "Roshar",
     "events": "Tien is born",
@@ -353,6 +401,7 @@
     "shards": []
   },
   {
+    "id": "event-049",
     "year": 10945.6,
     "system": "Roshar",
     "events": "Dalinar's wife dies",
@@ -360,6 +409,7 @@
     "shards": []
   },
   {
+    "id": "event-050",
     "year": 10947.8,
     "system": "Roshar",
     "events": "Szeth is named Truthless",
@@ -367,6 +417,7 @@
     "shards": []
   },
   {
+    "id": "event-051",
     "year": 10948.9,
     "system": "Roshar",
     "events": "First encounter with the Parshendi",
@@ -374,6 +425,7 @@
     "shards": []
   },
   {
+    "id": "event-052",
     "year": 10950,
     "system": "Roshar",
     "events": "War of Reckoning Begins",
@@ -381,6 +433,7 @@
     "shards": []
   },
   {
+    "id": "event-053",
     "year": 10951.1,
     "system": "Roshar",
     "events": "Kaladin and Tien join Amaram's army",
@@ -388,6 +441,7 @@
     "shards": []
   },
   {
+    "id": "event-054",
     "year": 10954.4,
     "system": "Roshar",
     "events": "Shallan's brother Helaran disappears and is presumed dead",
@@ -395,6 +449,7 @@
     "shards": []
   },
   {
+    "id": "event-055",
     "year": 10955.5,
     "system": "Roshar",
     "events": "Kaladin rescues Amaram; turns down Shardblade and Shardplate. Taravangian obtains Szeth's Oathstone",
@@ -402,6 +457,7 @@
     "shards": []
   },
   {
+    "id": "event-056",
     "year": 10956.6,
     "system": "Roshar",
     "events": "Bridge Four rescues Dalinar's army. The Everstorm starts.",
@@ -409,6 +465,7 @@
     "shards": []
   },
   {
+    "id": "event-057",
     "year": 10957.7,
     "system": "Roshar",
     "events": "Lift confronts Darkness in Yeddaw",
@@ -416,6 +473,7 @@
     "shards": []
   },
   {
+    "id": "event-058",
     "year": 10958.8,
     "system": "Roshar",
     "events": "(Stormlight 5)",
@@ -423,6 +481,7 @@
     "shards": []
   },
   {
+    "id": "event-059",
     "year": 10967,
     "system": "Scadrial",
     "events": "Wax returns to Elendel",
@@ -430,6 +489,7 @@
     "shards": []
   },
   {
+    "id": "event-060",
     "year": 10968,
     "system": "Scadrial",
     "events": "Paalm attacks Elendel. First Contact with the Southern Scadrians",
@@ -437,6 +497,7 @@
     "shards": []
   },
   {
+    "id": "event-061",
     "year": 10969,
     "system": "Scadrial",
     "events": "Marasi thwarts Autonomy's Invasion of Scadrial",
@@ -444,6 +505,7 @@
     "shards": ["Autonomy"]
   },
   {
+    "id": "event-062",
     "year": 10975.3,
     "system": "Roshar",
     "events": "(Stormlight Archive 6, Stormlight Archive 7)",
@@ -451,6 +513,7 @@
     "shards": []
   },
   {
+    "id": "event-063",
     "year": 10976.4,
     "system": "Roshar",
     "events": "(Stormlight Archive 8, Stormlight Archive 9)",
@@ -458,6 +521,7 @@
     "shards": []
   },
   {
+    "id": "event-064",
     "year": 10977.5,
     "system": "Roshar",
     "events": "(Stormlight Archive 10)",
@@ -465,6 +529,7 @@
     "shards": []
   },
   {
+    "id": "event-065",
     "year": 11019,
     "system": "Scadrial",
     "events": "(Mistborn Era 3)",
@@ -472,6 +537,7 @@
     "shards": []
   },
   {
+    "id": "event-066",
     "year": 15919,
     "system": "Drominad",
     "events": "The Ones Above make contact with First of the Sun",
@@ -479,6 +545,7 @@
     "shards": []
   },
   {
+    "id": "event-067",
     "year": 16019,
     "system": "Scadrial",
     "events": "(Mistborn Era 4)",
@@ -486,6 +553,7 @@
     "shards": []
   },
   {
+    "id": "event-068",
     "date": {
       "kind": "point",
       "value": 15000,
@@ -498,16 +566,19 @@
     "shards": []
   },
   {
+    "id": "event-069",
     "year": 4950,
     "system": "Roshar",
     "events": "The Sibling is Created"
   },
   {
+    "id": "event-070",
     "year": 3900,
     "system": "Roshar",
     "events": "First Humans come to Roshar"
   },
   {
+    "id": "event-071",
     "year": 900,
     "system": "Roshar",
     "events": "Honor (Tanavast) & Cultivation come to Roshar",
@@ -515,6 +586,7 @@
     "shards": ["Honor", "Cultivation"]
   },
   {
+    "id": "event-072",
     "year": 2900,
     "system": "Roshar",
     "events": "Honor finds Odium has arrived in Rosharan system",
@@ -522,6 +594,7 @@
     "shards": ["Honor", "Odium", "Cultivation"]
   },
   {
+    "id": "event-073",
     "year": 3850,
     "system": "Roshar",
     "events": "Ashyn is burning",
@@ -529,6 +602,7 @@
     "shards": ["Honor", "Odium"]
   },
   {
+    "id": "event-074",
     "year": 3900,
     "system": "Roshar",
     "events": "Cultivation, Honor, and Odium bind themselves and their powers.",
@@ -536,6 +610,7 @@
     "shards": ["Honor", "Odium", "Cultivation"]
   },
   {
+    "id": "event-075",
     "year": 3950,
     "system": "Roshar",
     "events": "Honor seeks help from the other Shards against Odium",
@@ -543,6 +618,7 @@
     "shards": ["Honor", "Odium", "Cultivation"]
   },
   {
+    "id": "event-076",
     "year": 6400,
     "system": "Roshar",
     "events": "Honor, and Odium clash, crashing down a fourth moon.",
@@ -550,6 +626,7 @@
     "shards": ["Honor", "Odium"]
   },
   {
+    "id": "event-077",
     "year": 6450,
     "system": "Roshar",
     "events": "The Oathpact is broken (Wind and Truth)?",
@@ -557,6 +634,7 @@
     "shards": ["Honor", "Odium"]
   },
   {
+    "id": "event-078",
     "year": 8950,
     "system": "Roshar",
     "events": "Honor betrays the Demigod Mishram",
@@ -564,6 +642,7 @@
     "shards": ["Honor"]
   },
   {
+    "id": "event-079",
     "year": 10650,
     "system": "Roshar",
     "events": "Ishar takes the power of Odium",
@@ -571,6 +650,7 @@
     "shards": ["Odium"]
   },
   {
+    "id": "event-080",
     "year": 7958,
     "system": "Roshar",
     "events": "Ishar records the story of the Wandersail",
