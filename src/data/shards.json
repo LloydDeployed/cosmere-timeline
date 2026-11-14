@@ -1,0 +1,131 @@
+[
+  {
+    "name": "Devotion",
+    "currentVessel": "Aona",
+    "vesselLiving": false,
+    "formerVessels": [],
+    "worlds": "Sel",
+    "books": ["Elantris, The Emperor's Soul"]
+  },
+  {
+    "name": "Dominion",
+    "currentVessel": "Skai",
+    "vesselLiving": false,
+    "formerVessels": [],
+    "worlds": "Sel",
+    "books": ["Elantris, The Emperor's Soul"]
+  },
+  {
+    "name": "Preservation",
+    "currentVessel": "Sazed",
+    "vesselLiving": true,
+    "formerVessels": ["Leras, Kelsier, and Vin"],
+    "worlds": "Scadrial",
+    "books": ["Mistborn"]
+  },
+  {
+    "name": "Ruin",
+    "currentVessel": "Sazed",
+    "vesselLiving": true,
+    "formerVessels": ["Ati"],
+    "worlds": "Scadrial",
+    "books": ["Mistborn"]
+  },
+  {
+    "name": "Odium",
+    "currentVessel": "Taravangian",
+    "vesselLiving": true,
+    "formerVessels": ["Rayse"],
+    "worlds": ["Braize", "Roshar"],
+    "books": "The Stormlight Archive"
+  },
+  {
+    "name": "Cultivation",
+    "currentVessel": "Koravellium Avast",
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": ["Roshar"],
+    "books": "The Stormlight Archive"
+  },
+  {
+    "name": "Honor",
+    "currentVessel": "Taravangian",
+    "vesselLiving": true,
+    "formerVessels": ["Tanavast", "Dalinar Kholin"],
+    "worlds": ["Roshar"],
+    "books": "The Stormlight Archive"
+  },
+  {
+    "name": "Endowment",
+    "currentVessel": "Edgli",
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": ["Nalthis"],
+    "books": ["Warbreaker"]
+  },
+  {
+    "name": "Ambition",
+    "currentVessel": "Uli Da",
+    "vesselLiving": false,
+    "formerVessels": [],
+    "worlds": ["Threnody"],
+    "books": ["Shadows for Silence in the Forests of Hell"]
+  },
+  {
+    "name": "Invention",
+    "currentVessel": "Chan Ko Sar",
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": [],
+    "books": []
+  },
+  {
+    "name": "Mercy",
+    "currentVessel": null,
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": [],
+    "books": []
+  },
+  {
+    "name": "Valor",
+    "currentVessel": "Medelantorius",
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": [],
+    "books": []
+  },
+  {
+    "name": "Whimsy",
+    "currentVessel": null,
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": [],
+    "books": []
+  },
+  {
+    "name": "Virtuosity",
+    "currentVessel": null,
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": ["Komashi"],
+    "books": ["Yumi and the Nightmare Painter"]
+  },
+  {
+    "name": "Reason",
+    "currentVessel": "Euridrius",
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": [],
+    "books": []
+  },
+  {
+    "name": "Autonomy",
+    "currentVessel": "Bavadin",
+    "vesselLiving": true,
+    "formerVessels": [],
+    "worlds": ["Taldain"],
+    "avatarsOn": ["First of the Sun", "Obrodai", "Scadrial"],
+    "books": ["White Sand", "Sixth of the Dusk", "Mistborn Era 2"]
+  }
+]

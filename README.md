@@ -17,3 +17,20 @@ This project was bootstrapped with [Create React App]
 - [ ] Dynamic custom filtering
 - [ ] Links to Coppermind
 - [ ] World Hopper / Shard travels
+- [ ] Condensing time spans without events
+
+## Design
+
+### Events
+
+- Wiki links
+- Shapes and colors for categories and types
+  - Books
+  - Shards
+  - Characters
+
+## Notes
+
+- SLA5 ~ 10958.8
+- 4950 ~ the Sibling is created (6000 y)
+- 3900 ~ first people come to Roshar (7000 y)

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 function Event({ event, color, system, min, max }) {
   const [open, setOpen] = useState(false);
@@ -7,9 +7,6 @@ function Event({ event, color, system, min, max }) {
   const percent = (year - min) / (max - min);
   const left = percent > 0.5;
 
-  // if (system === 'Sel') {
-  //   console.log('%', percent);
-  // }
 
   return (
     <Container
@@ -28,12 +25,13 @@ function Event({ event, color, system, min, max }) {
   );
 }
 
-const dotSize = 20;
+const dotSize = 12;
 
 const Container = styled.div`
   width: ${dotSize}px;
   height: ${dotSize}px;
   border-radius: 50%;
+  border: 1px solid white;
   position: absolute;
   top: calc(50% - ${dotSize / 2}px);
   left: calc(${(props) => props.$percent * 100}% - ${dotSize / 2}px);

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import './App.css';
 import TimelineDisplay from './components/TimelineDisplay';
 
@@ -21,7 +21,6 @@ const AppContainer = styled.div`
   color: white;
   width: 100%;
   padding: 60px 0;
-
 `;
 
 const Header = styled.header`

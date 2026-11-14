@@ -1,20 +1,36 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Timeline from './Timeline';
 import TimeScale from './TimeScale';
 import events from '../data/timelineEvents.json';
 import systemsData from '../data/systemsData.json';
 import { addEventsToSystems, groupEventsBySystem } from '../utils/dataUtils';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import useDebouncedState from '../hooks/useDebouncedState';
+import { Slider } from '@mui/material';
+import TimelineSvg from './TimelineSvg';
 
-const MIN_YEAR = -1050;
-const MAX_YEAR = 16019;
+const MIN_YEAR = -1100;
+const MAX_YEAR = 16050;
+const marks = [
+  { value: MIN_YEAR, label: MIN_YEAR },
+  { value: 0, label: '0' },
+  { value: 2000, label: '2000' },
+  { value: 4000, label: '4000' },
+  { value: 6000, label: '6000' },
+  { value: 8000, label: '8000' },
+  { value: 10000, label: '10000' },
+  { value: 12000, label: '12000' },
+  { value: 14000, label: '14000' },
+  { value: MAX_YEAR, label: MAX_YEAR },
+];
+
 const systemsWithEvents = addEventsToSystems(
   systemsData,
   groupEventsBySystem(events)
 );
 
 function TimelineDisplay() {
+  const containerRef = useRef(null);
   const [minInput, setMinInput] = useState(MIN_YEAR);
   const [maxInput, setMaxInput] = useState(MAX_YEAR);
   const [minYear, setMinYear] = useDebouncedState(MIN_YEAR, 500);
@@ -45,10 +61,17 @@ function TimelineDisplay() {
     });
   };
 
+  const handleSliderChange = (e, newValue) => {
+    setMinYear(newValue[0]);
+    setMinInput(newValue[0]);
+    setMaxYear(newValue[1]);
+    setMaxInput(newValue[1]);
+  };
+
   const timelines = Object.keys(systemsWithEvents);
 
   return (
-    <Container>
+    <Container ref={containerRef}>
       <div className="timeline-buttons">
         {timelines.map((system) => (
           <SystemButton
@@ -61,17 +84,26 @@ function TimelineDisplay() {
           </SystemButton>
         ))}
       </div>
-      {timelines.map((system) => (
-        <Timeline
-          key={system}
-          system={systemsWithEvents[system]}
-          min={minYear}
-          max={maxYear}
-          active={activeLines.includes(system)}
-        />
-      ))}
-      <TimeScale min={minYear} max={maxYear} />
 
+      <div
+        className="year-slider"
+        style={{ marginTop: '30px', padding: '20px 130px' }}
+      >
+        <Slider
+          getAriaLabel={() => 'Year range'}
+          label="Year Range"
+          min={MIN_YEAR}
+          max={MAX_YEAR}
+          marks={marks}
+          value={[minYear, maxYear]}
+          onChange={handleSliderChange}
+          valueLabelDisplay="on"
+          sx={{
+            '& .MuiSlider-valueLabel': { color: 'white' },
+            '& .MuiSlider-markLabel': { color: 'white' },
+          }}
+        />
+      </div>
       <YearSelect className="year-select">
         <div className="year-input">
           <label htmlFor="start-year">Start Year</label>
@@ -92,6 +124,34 @@ function TimelineDisplay() {
           />
         </div>
       </YearSelect>
+      <TimeScale min={minYear} max={maxYear} />
+
+      <svg
+        width="100%"
+        height="50%"
+        viewBox={`0 0 1000 ${timelines.length * 28}`}
+      >
+        {timelines.map((system, index) => (
+          <TimelineSvg
+            key={system}
+            index={index}
+            system={systemsWithEvents[system]}
+            min={minYear}
+            max={maxYear}
+            active={activeLines.includes(system)}
+          />
+        ))}
+      </svg>
+      <TimeScale min={minYear} max={maxYear} />
+      {timelines.map((system) => (
+        <Timeline
+          key={system}
+          system={systemsWithEvents[system]}
+          min={minYear}
+          max={maxYear}
+          active={activeLines.includes(system)}
+        />
+      ))}
     </Container>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import Event from './Event';
 
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 // FIXME: Need linePixelWidth to calculate event groupings
 // ask chat gpt

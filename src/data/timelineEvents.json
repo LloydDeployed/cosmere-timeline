@@ -486,5 +486,84 @@
     "events": "The Sunlit Man (extremely rough estimate)",
     "books": ["The Sunlit Man"],
     "shards": []
+  },
+  {
+    "year": 4950,
+    "system": "Roshar",
+    "events": "The Sibling is Created"
+  },
+  {
+    "year": 3900,
+    "system": "Roshar",
+    "events": "First Humans come to Roshar"
+  },
+  {
+    "year": 900,
+    "system": "Roshar",
+    "events": "Honor (Tanavast) & Cultivation come to Roshar",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor", "Cultivation"]
+  },
+  {
+    "year": 2900,
+    "system": "Roshar",
+    "events": "Honor finds Odium has arrived in Rosharan system",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor", "Odium", "Cultivation"]
+  },
+  {
+    "year": 3850,
+    "system": "Roshar",
+    "events": "Ashyn is burning",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor", "Odium"]
+  },
+  {
+    "year": 3900,
+    "system": "Roshar",
+    "events": "Cultivation, Honor, and Odium bind themselves and their powers.",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor", "Odium", "Cultivation"]
+  },
+  {
+    "year": 3950,
+    "system": "Roshar",
+    "events": "Honor seeks help from the other Shards against Odium",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor", "Odium", "Cultivation"]
+  },
+  {
+    "year": 6400,
+    "system": "Roshar",
+    "events": "Honor, and Odium clash, crashing down a fourth moon.",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor", "Odium"]
+  },
+  {
+    "year": 6450,
+    "system": "Roshar",
+    "events": "The Oathpact is broken (Wind and Truth)?",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor", "Odium"]
+  },
+  {
+    "year": 8950,
+    "system": "Roshar",
+    "events": "Honor betrays the Demigod Mishram",
+    "books": ["Wind and Truth"],
+    "shards": ["Honor"]
+  },
+  {
+    "year": 10650,
+    "system": "Roshar",
+    "events": "Ishar takes the power of Odium",
+    "books": ["Wind and Truth"],
+    "shards": ["Odium"]
+  },
+  {
+    "year": 7958,
+    "system": "Roshar",
+    "events": "Ishar records the story of the Wandersail",
+    "books": ["Wind and Truth"]
   }
 ]

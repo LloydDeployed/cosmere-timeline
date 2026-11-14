@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 const Hash = ({ label, index, percent }) => {
   return (
@@ -67,7 +67,7 @@ const HashContainer = styled.div`
   position: absolute;
   top: 0;
   left: ${(p) => {
-    console.log('p: ', p);
+    // console.log('p: ', p);
     return `${p.index * p.percent}%`;
   }};
   translate: -50% 0;

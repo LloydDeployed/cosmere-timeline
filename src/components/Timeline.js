@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import EventLine from './EventLine';
 
 // TODO:
@@ -8,16 +8,16 @@ import EventLine from './EventLine';
 
 function Line(props) {
   const { system, min, max, active } = props;
+
   const { color, events } = system;
   const filteredEvents = events?.filter(
     (event) => event.year >= min && event.year <= max
   );
-  console.log('filteredEvents?.length: ', filteredEvents?.length);
+  // console.log('filteredEvents?.length: ', filteredEvents?.length);
 
-  // get parent width
 
   return (
-    <Container className={active ? 'active' : 'inactive'}>
+    <Container  className={active ? 'active' : 'inactive'}>
       <Label
         title={system.primary}
         className={color ? 'with-shadow' : null}
