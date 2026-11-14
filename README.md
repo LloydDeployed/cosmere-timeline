@@ -6,6 +6,15 @@ This is a timeline of the Cosmere, a universe created by Brandon Sanderson. It i
 
 This project was bootstrapped with [Create React App]
 
+The timeline is rendered as one SVG backed by pure projection helpers. Use the
+lane buttons to show or hide systems, the earlier/later controls to pan, and the
+zoom controls or mouse wheel to change the visible year span. Numeric inputs
+allow direct viewport bounds.
+
+Approximate and unknown-precision dates use hollow markers and an `≈` label.
+Date ranges render as spans. Ordering-only events stay outside the numeric axis
+rather than being assigned an invented year.
+
 ## Roadmap
 
 - [x] Basic timeline with events

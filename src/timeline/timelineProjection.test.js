@@ -1,0 +1,141 @@
+import {
+  clampViewport,
+  createTimelineViewModel,
+  panViewport,
+  zoomViewport,
+} from './timelineProjection';
+
+const bounds = { start: -100, end: 900 };
+
+describe('timeline viewport math', () => {
+  test('clamps reversed, undersized, and out-of-bounds viewports', () => {
+    expect(clampViewport({ start: 950, end: -200 }, bounds, 100)).toEqual(bounds);
+    expect(clampViewport({ start: -200, end: 0 }, bounds, 100)).toEqual({
+      start: -100,
+      end: 100,
+    });
+    expect(clampViewport({ start: 850, end: 870 }, bounds, 100)).toEqual({
+      start: 800,
+      end: 900,
+    });
+  });
+
+  test('zooms around an anchor and will not exceed chronology bounds', () => {
+    expect(zoomViewport({ start: 0, end: 800 }, 0.5, 200, bounds, 100)).toEqual({
+      start: 100,
+      end: 500,
+    });
+    expect(zoomViewport(bounds, 2, 400, bounds, 100)).toEqual(bounds);
+  });
+
+  test('pans without changing span or escaping chronology bounds', () => {
+    expect(panViewport({ start: 0, end: 400 }, 250, bounds)).toEqual({
+      start: 250,
+      end: 650,
+    });
+    expect(panViewport({ start: 0, end: 400 }, -500, bounds)).toEqual({
+      start: -100,
+      end: 300,
+    });
+  });
+});
+
+describe('timeline view model', () => {
+  const systems = [
+    { id: 'Roshar', name: 'Roshar', color: '#68a7d3' },
+    { id: 'Sel', name: 'Sel', color: '#9ac56b' },
+  ];
+  const events = [
+    {
+      id: 'exact',
+      location: { system: 'Roshar' },
+      date: { kind: 'point', value: 100, precision: 'exact', confidence: 'high' },
+      description: 'Exact event',
+    },
+    {
+      id: 'approximate',
+      location: { system: 'Roshar' },
+      date: {
+        kind: 'point',
+        value: 200,
+        precision: 'approximate',
+        confidence: 'low',
+      },
+      description: 'Approximate event',
+    },
+    {
+      id: 'range',
+      location: { system: 'Roshar' },
+      date: {
+        kind: 'range',
+        start: 300,
+        end: 500,
+        precision: 'approximate',
+        confidence: 'medium',
+      },
+      description: 'Range event',
+    },
+    {
+      id: 'ordered',
+      location: { system: 'Roshar' },
+      date: { kind: 'order', after: 'range', precision: 'unknown', confidence: 'low' },
+      description: 'Only ordered event',
+    },
+    {
+      id: 'sel-event',
+      location: { system: 'Sel' },
+      date: { kind: 'point', value: 400, precision: 'exact', confidence: 'high' },
+      description: 'Hidden with lane',
+    },
+  ];
+
+  test('projects enabled lanes deterministically into plot coordinates', () => {
+    const model = createTimelineViewModel({
+      systems,
+      events,
+      activeSystemIds: ['Roshar'],
+      viewport: { start: 0, end: 800 },
+      width: 1000,
+    });
+
+    expect(model.lanes).toHaveLength(1);
+    expect(model.lanes[0].id).toBe('Roshar');
+    expect(model.lanes[0].events.map(({ id }) => id)).toEqual([
+      'exact',
+      'approximate',
+      'range',
+    ]);
+    expect(model.lanes[0].events[0].x).toBeCloseTo(250);
+    expect(model.lanes[0].events[1]).toMatchObject({ uncertain: true });
+  });
+
+  test('renders ranges as spans and keeps order-only events off the numeric axis', () => {
+    const model = createTimelineViewModel({
+      systems,
+      events,
+      activeSystemIds: ['Roshar'],
+      viewport: { start: 0, end: 800 },
+      width: 1000,
+    });
+    const lane = model.lanes[0];
+    const range = lane.events.find(({ id }) => id === 'range');
+
+    expect(range).toMatchObject({ kind: 'range', x: 450, x2: 650 });
+    expect(lane.orderOnlyEvents).toEqual([
+      expect.objectContaining({ id: 'ordered', x: null, dateLabel: 'After range' }),
+    ]);
+  });
+
+  test('clips out-of-range numeric events without dropping relative-order notes', () => {
+    const model = createTimelineViewModel({
+      systems,
+      events,
+      activeSystemIds: ['Roshar'],
+      viewport: { start: 0, end: 250 },
+      width: 1000,
+    });
+
+    expect(model.lanes[0].events.map(({ id }) => id)).toEqual(['exact', 'approximate']);
+    expect(model.lanes[0].orderOnlyEvents).toHaveLength(1);
+  });
+});

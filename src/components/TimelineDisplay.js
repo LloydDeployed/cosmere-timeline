@@ -1,217 +1,240 @@
+import { useMemo, useState } from 'react';
 import styled from '@emotion/styled';
-import Timeline from './Timeline';
-import TimeScale from './TimeScale';
 import canonicalData from '../data/canonicalData';
-import { addEventsToSystems, groupEventsBySystem } from '../utils/dataUtils';
-import { useRef, useState } from 'react';
-import useDebouncedState from '../hooks/useDebouncedState';
-import { Slider } from '@mui/material';
-import TimelineSvg from './TimelineSvg';
+import TimelineViewport from './TimelineViewport';
+import {
+  CHRONOLOGY_BOUNDS,
+  clampViewport,
+  formatTimelineDate,
+  panViewport,
+  zoomViewport,
+} from '../timeline/timelineProjection';
 
-const MIN_YEAR = -1100;
-const MAX_YEAR = 16050;
-const marks = [
-  { value: MIN_YEAR, label: MIN_YEAR },
-  { value: 0, label: '0' },
-  { value: 2000, label: '2000' },
-  { value: 4000, label: '4000' },
-  { value: 6000, label: '6000' },
-  { value: 8000, label: '8000' },
-  { value: 10000, label: '10000' },
-  { value: 12000, label: '12000' },
-  { value: 14000, label: '14000' },
-  { value: MAX_YEAR, label: MAX_YEAR },
-];
-
-const systemsWithEvents = addEventsToSystems(
-  canonicalData.systems,
-  groupEventsBySystem(canonicalData.events)
-);
+const formatControlValue = (value) => Number(value.toFixed(2));
 
 function TimelineDisplay() {
-  const containerRef = useRef(null);
-  const [minInput, setMinInput] = useState(MIN_YEAR);
-  const [maxInput, setMaxInput] = useState(MAX_YEAR);
-  const [minYear, setMinYear] = useDebouncedState(MIN_YEAR, 500);
-  const [maxYear, setMaxYear] = useDebouncedState(MAX_YEAR, 500);
-
-  const [activeLines, setActiveLines] = useState(
-    Object.keys(systemsWithEvents)
+  const [viewport, setViewport] = useState(CHRONOLOGY_BOUNDS);
+  const [activeSystemIds, setActiveSystemIds] = useState(() =>
+    canonicalData.systems.map(({ id }) => id)
+  );
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const selectedEvent = useMemo(
+    () => canonicalData.events.find(({ id }) => id === selectedEventId) ?? null,
+    [selectedEventId]
   );
 
-  const handleMinYearChange = (e) => {
-    const value = Math.max(e.target.value, MIN_YEAR);
-    setMinInput(value);
-    setMinYear(value);
-  };
-  const handleMaxYearChange = (e) => {
-    const value = Math.min(e.target.value, MAX_YEAR);
-    setMaxInput(value);
-    setMaxYear(value);
+  const toggleSystem = (systemId) => {
+    setActiveSystemIds((current) =>
+      current.includes(systemId)
+        ? current.filter((id) => id !== systemId)
+        : [...current, systemId]
+    );
   };
 
-  const toggleActive = (system) => {
-    setActiveLines((prev) => {
-      if (prev.includes(system)) {
-        return prev.filter((s) => s !== system);
-      } else {
-        return [...prev, system];
-      }
-    });
+  const setBound = (bound, value) => {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return;
+    setViewport((current) =>
+      clampViewport({ ...current, [bound]: number }, CHRONOLOGY_BOUNDS)
+    );
   };
 
-  const handleSliderChange = (e, newValue) => {
-    setMinYear(newValue[0]);
-    setMinInput(newValue[0]);
-    setMaxYear(newValue[1]);
-    setMaxInput(newValue[1]);
+  const zoom = (factor) => {
+    setViewport((current) =>
+      zoomViewport(
+        current,
+        factor,
+        current.start + (current.end - current.start) / 2,
+        CHRONOLOGY_BOUNDS
+      )
+    );
   };
 
-  const timelines = Object.keys(systemsWithEvents);
+  const pan = (direction) => {
+    setViewport((current) =>
+      panViewport(
+        current,
+        (current.end - current.start) * 0.25 * direction,
+        CHRONOLOGY_BOUNDS
+      )
+    );
+  };
 
   return (
-    <Container ref={containerRef}>
-      <div className="timeline-buttons">
-        {timelines.map((system) => (
-          <SystemButton
-            key={system}
-            className={activeLines.includes(system) ? 'active' : 'inactive'}
-            $color={systemsWithEvents[system]?.color}
-            onClick={() => toggleActive(system)}
-          >
-            {system}
-          </SystemButton>
-        ))}
-      </div>
+    <Container>
+      <section aria-labelledby="lane-heading">
+        <ControlHeading id="lane-heading">World and system lanes</ControlHeading>
+        <LaneControls>
+          {canonicalData.systems.map((system) => {
+            const isActive = activeSystemIds.includes(system.id);
+            return (
+              <LaneButton
+                key={system.id}
+                type="button"
+                aria-pressed={isActive}
+                $active={isActive}
+                $color={system.color}
+                onClick={() => toggleSystem(system.id)}
+              >
+                {system.name}
+              </LaneButton>
+            );
+          })}
+        </LaneControls>
+      </section>
 
-      <div
-        className="year-slider"
-        style={{ marginTop: '30px', padding: '20px 130px' }}
-      >
-        <Slider
-          getAriaLabel={() => 'Year range'}
-          label="Year Range"
-          min={MIN_YEAR}
-          max={MAX_YEAR}
-          marks={marks}
-          value={[minYear, maxYear]}
-          onChange={handleSliderChange}
-          valueLabelDisplay="on"
-          sx={{
-            '& .MuiSlider-valueLabel': { color: 'white' },
-            '& .MuiSlider-markLabel': { color: 'white' },
-          }}
-        />
-      </div>
-      <YearSelect className="year-select">
-        <div className="year-input">
-          <label htmlFor="start-year">Start Year</label>
+      <ViewportControls aria-label="Timeline viewport controls">
+        <ControlButton type="button" onClick={() => pan(-1)} aria-label="Pan earlier">
+          ← Earlier
+        </ControlButton>
+        <ControlButton type="button" onClick={() => zoom(0.5)} aria-label="Zoom in">
+          + Zoom in
+        </ControlButton>
+        <ControlButton type="button" onClick={() => zoom(2)} aria-label="Zoom out">
+          − Zoom out
+        </ControlButton>
+        <ControlButton type="button" onClick={() => pan(1)} aria-label="Pan later">
+          Later →
+        </ControlButton>
+        <YearField>
+          <label htmlFor="start-year">Start year</label>
           <input
             id="start-year"
             type="number"
-            value={minInput}
-            onChange={handleMinYearChange}
+            min={CHRONOLOGY_BOUNDS.start}
+            max={CHRONOLOGY_BOUNDS.end}
+            value={formatControlValue(viewport.start)}
+            onChange={(event) => setBound('start', event.target.value)}
           />
-        </div>
-        <div className="year-input">
-          <label htmlFor="end-year">End Year</label>
+        </YearField>
+        <YearField>
+          <label htmlFor="end-year">End year</label>
           <input
             id="end-year"
             type="number"
-            value={maxInput}
-            onChange={handleMaxYearChange}
+            min={CHRONOLOGY_BOUNDS.start}
+            max={CHRONOLOGY_BOUNDS.end}
+            value={formatControlValue(viewport.end)}
+            onChange={(event) => setBound('end', event.target.value)}
           />
-        </div>
-      </YearSelect>
-      <TimeScale min={minYear} max={maxYear} />
+        </YearField>
+      </ViewportControls>
 
-      <svg
-        width="100%"
-        height="50%"
-        viewBox={`0 0 1000 ${timelines.length * 28}`}
-      >
-        {timelines.map((system, index) => (
-          <TimelineSvg
-            key={system}
-            index={index}
-            system={systemsWithEvents[system]}
-            min={minYear}
-            max={maxYear}
-            active={activeLines.includes(system)}
-          />
-        ))}
-      </svg>
-      <TimeScale min={minYear} max={maxYear} />
-      {timelines.map((system) => (
-        <Timeline
-          key={system}
-          system={systemsWithEvents[system]}
-          min={minYear}
-          max={maxYear}
-          active={activeLines.includes(system)}
-        />
-      ))}
+      <Legend>
+        The chronology stays linear, including long quiet eras. Zoom to inspect dense eras.
+        Hollow markers and ≈ labels preserve approximate or unknown date precision.
+      </Legend>
+
+      <TimelineViewport
+        systems={canonicalData.systems}
+        events={canonicalData.events}
+        activeSystemIds={activeSystemIds}
+        viewport={viewport}
+        selectedEventId={selectedEventId}
+        onSelectEvent={setSelectedEventId}
+        onZoom={zoom}
+      />
+
+      <SelectionStatus role="status" aria-live="polite">
+        {selectedEvent
+          ? `${formatTimelineDate(selectedEvent.date)} — ${selectedEvent.description}`
+          : 'Select an event marker for its date and description.'}
+      </SelectionStatus>
     </Container>
   );
 }
 
 const Container = styled.div`
-  width: 100%;
-  border: 1px solid #555;
-  padding: 20px;
+  width: min(1500px, 100%);
+  margin: 0 auto;
 `;
 
-const YearSelect = styled.div`
+const ControlHeading = styled.h2`
+  margin: 0 0 0.75rem;
+  color: #f2ead9;
+  font-size: 1rem;
+  text-align: left;
+`;
+
+const LaneControls = styled.div`
   display: flex;
-  justify-content: space-around;
-  padding: 10px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
 
-  .year-input {
-    border: 1px solid #555;
-    border-radius: 8px;
-    padding: 20px;
-    font-size: 20px;
+const LaneButton = styled.button`
+  padding: 0.45rem 0.75rem;
+  color: #f8f4e9;
+  background: #202829;
+  border: 1px solid ${({ $active, $color }) => ($active ? $color : '#566061')};
+  border-left-width: 0.35rem;
+  border-radius: 0.25rem;
+  opacity: ${({ $active }) => ($active ? 1 : 0.55)};
+  cursor: pointer;
 
-    label {
-      font-weight: bold;
-      margin-right: 10px;
-    }
-    input {
-      width: 100px;
-      background-color: transparent;
-      color: white;
-      border: none;
-      font-size: 20px;
-      text-align: center;
-      border-bottom: 1px solid white;
-    }
+  &:focus-visible {
+    outline: 3px solid #f0b35a;
+    outline-offset: 2px;
   }
 `;
 
-const SystemButton = styled.button`
-  padding: 5px 10px;
-  margin: 10px;
-  background-color: #222;
-  color: black;
-  /* text-shadow: 1px 1px 2px white; */
-  border-radius: 50px;
-  cursor: pointer;
-  background-color: ${(props) => props.$color || 'white'};
-  font-weight: 800;
-  font-size: 20px;
-  opacity: 0.85;
-  transition: all 0.25s ease;
+const ViewportControls = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.55rem;
+  margin: 1rem 0 0.65rem;
+`;
 
-  &.active {
-    border: 3px solid red;
-  }
-  &.inactive {
-    opacity: 0.3;
-  }
+const ControlButton = styled.button`
+  min-height: 2.5rem;
+  padding: 0.45rem 0.75rem;
+  color: #f8f4e9;
+  background: #283334;
+  border: 1px solid #687576;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
   &:hover {
-    opacity: 1;
-    transform: scale(1.07);
+    background: #344243;
   }
+`;
+
+const YearField = styled.div`
+  display: grid;
+  gap: 0.2rem;
+  margin-left: 0.3rem;
+  text-align: left;
+
+  label {
+    color: #bfc7c6;
+    font-size: 0.75rem;
+  }
+
+  input {
+    width: 7.25rem;
+    min-height: 2.5rem;
+    padding: 0.35rem 0.5rem;
+    color: #fff;
+    background: #151b1c;
+    border: 1px solid #687576;
+    border-radius: 0.25rem;
+  }
+`;
+
+const Legend = styled.p`
+  margin: 0 0 0.75rem;
+  color: #bfc7c6;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  text-align: left;
+`;
+
+const SelectionStatus = styled.p`
+  min-height: 1.5rem;
+  margin: 0.75rem 0 0;
+  color: #d8dedc;
+  text-align: left;
 `;
 
 export default TimelineDisplay;
