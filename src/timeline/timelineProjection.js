@@ -82,6 +82,37 @@ export const panViewport = (viewport, delta, bounds) => {
   return { start, end };
 };
 
+export const applyViewportBoundDraft = (
+  viewport,
+  bound,
+  draft,
+  bounds,
+  minimumSpan = MIN_VIEWPORT_SPAN
+) => {
+  if (String(draft).trim() === '') {
+    return { viewport, error: 'Enter a whole year.' };
+  }
+  const value = Number(draft);
+  if (!Number.isInteger(value)) {
+    return { viewport, error: 'Enter a whole year.' };
+  }
+  if (value < bounds.start || value > bounds.end) {
+    return {
+      viewport,
+      error: `Enter a year from ${bounds.start} through ${bounds.end}.`,
+    };
+  }
+
+  const next = { ...viewport, [bound]: value };
+  if (next.end - next.start < minimumSpan) {
+    return {
+      viewport,
+      error: `Start and end must be at least ${minimumSpan} years apart.`,
+    };
+  }
+  return { viewport: next, error: null };
+};
+
 const formatYear = (value) =>
   Number.isInteger(value) ? String(value) : Number(value.toFixed(2)).toString();
 

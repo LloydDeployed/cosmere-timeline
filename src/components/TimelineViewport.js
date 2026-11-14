@@ -205,7 +205,7 @@ function TimelineViewport({
               d={path.d}
               fill="none"
               stroke={path.color}
-              strokeWidth="4"
+              strokeWidth="2.5"
               strokeDasharray="8 5"
               strokeLinecap="round"
               opacity="0.82"

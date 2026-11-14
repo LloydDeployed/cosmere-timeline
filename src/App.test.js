@@ -59,6 +59,38 @@ describe('timeline viewport', () => {
     expect(Number(start.value)).toBeLessThan(zoomedStart);
   });
 
+  test('groups pan and zoom controls and presents whole-year viewport bounds', () => {
+    render(<App />);
+
+    const panControls = screen.getByRole('group', { name: /pan timeline/i });
+    expect(within(panControls).getByRole('button', { name: /pan earlier/i })).toBeInTheDocument();
+    expect(within(panControls).getByRole('button', { name: /pan later/i })).toBeInTheDocument();
+
+    const zoomControls = screen.getByRole('group', { name: /zoom timeline/i });
+    fireEvent.click(within(zoomControls).getByRole('button', { name: /zoom in/i }));
+
+    expect(screen.getByLabelText(/start year/i).value).toMatch(/^-?\d+$/);
+    expect(screen.getByLabelText(/end year/i).value).toMatch(/^-?\d+$/);
+  });
+
+  test('keeps temporary invalid year edits from resetting the viewport', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: /zoom in/i }));
+    const start = screen.getByLabelText(/start year/i);
+    const end = screen.getByLabelText(/end year/i);
+    const zoomedStart = start.value;
+
+    fireEvent.focus(end);
+    fireEvent.change(end, { target: { value: '1' } });
+
+    expect(start).toHaveValue(Number(zoomedStart));
+    expect(end).toHaveValue(1);
+
+    fireEvent.blur(end);
+    expect(start).toHaveValue(Number(zoomedStart));
+    expect(end).toHaveAttribute('aria-invalid', 'true');
+  });
+
   test('leaves ordinary wheel scrolling alone and requires a modifier for wheel zoom', () => {
     render(<App />);
     const viewport = screen.getByRole('group', { name: /cosmere chronology/i });
@@ -134,6 +166,7 @@ describe('timeline viewport', () => {
 
     expect(hoidToggle).toHaveAttribute('aria-pressed', 'true');
     expect(container.querySelectorAll('[data-worldhopper="hoid"]')).toHaveLength(3);
+    expect(container.querySelector('[data-worldhopper="hoid"]')).toHaveAttribute('stroke-width', '2.5');
 
     fireEvent.click(hoidToggle);
     expect(hoidToggle).toHaveAttribute('aria-pressed', 'false');
@@ -144,5 +177,18 @@ describe('timeline viewport', () => {
       target: { value: 'Pahn Kal Rebellion' },
     });
     expect(container.querySelectorAll('[data-worldhopper="hoid"]')).toHaveLength(0);
+  });
+
+  test('optionally hides lanes without events in the current viewport', () => {
+    render(<App />);
+    expect(screen.getByTestId('lane-Yolen')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /zoom in/i }));
+    fireEvent.click(screen.getByRole('checkbox', {
+      name: /hide lanes with no events in the current view/i,
+    }));
+
+    expect(screen.queryByTestId('lane-Yolen')).not.toBeInTheDocument();
+    expect(screen.getByTestId('lane-Roshar')).toBeInTheDocument();
   });
 });

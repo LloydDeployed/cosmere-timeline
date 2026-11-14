@@ -3,8 +3,8 @@ import styled from '@emotion/styled';
 import canonicalData from '../data/canonicalData';
 import TimelineViewport from './TimelineViewport';
 import {
+  applyViewportBoundDraft,
   CHRONOLOGY_BOUNDS,
-  clampViewport,
   formatTimelineDate,
   isEventInViewport,
   panViewport,
@@ -18,11 +18,62 @@ import {
 } from '../timeline/timelineFilters';
 import { deriveWorldhopperJourneys } from '../timeline/timelineTravel';
 
-const formatControlValue = (value) => Number(value.toFixed(2));
+const formatControlYear = (value) => String(Math.round(value));
+
+function YearBoundField({ bound, label, value, onCommit }) {
+  const [draft, setDraft] = useState(() => formatControlYear(value));
+  const [dirty, setDirty] = useState(false);
+  const [error, setError] = useState(null);
+  const errorId = `${bound}-year-error`;
+
+  useEffect(() => {
+    if (!dirty) setDraft(formatControlYear(value));
+  }, [dirty, value]);
+
+  const commit = () => {
+    const nextError = onCommit(bound, draft);
+    setError(nextError);
+    if (!nextError) setDirty(false);
+  };
+
+  const reset = () => {
+    setDraft(formatControlYear(value));
+    setDirty(false);
+    setError(null);
+  };
+
+  return (
+    <YearField>
+      <label htmlFor={`${bound}-year`}>{label}</label>
+      <input
+        id={`${bound}-year`}
+        type="number"
+        step="1"
+        min={CHRONOLOGY_BOUNDS.start}
+        max={CHRONOLOGY_BOUNDS.end}
+        value={draft}
+        aria-invalid={error ? 'true' : 'false'}
+        aria-describedby={error ? errorId : undefined}
+        onChange={(event) => {
+          setDraft(event.target.value);
+          setDirty(true);
+          setError(null);
+        }}
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') event.currentTarget.blur();
+          if (event.key === 'Escape') reset();
+        }}
+      />
+      {error && <YearError id={errorId}>{error}</YearError>}
+    </YearField>
+  );
+}
 
 function TimelineDisplay() {
   const [viewport, setViewport] = useState(CHRONOLOGY_BOUNDS);
   const [projectionMode, setProjectionMode] = useState('condensed');
+  const [hideEmptyLanes, setHideEmptyLanes] = useState(false);
   const [activeSystemIds, setActiveSystemIds] = useState(() =>
     canonicalData.systems.map(({ id }) => id)
   );
@@ -56,6 +107,13 @@ function TimelineDisplay() {
     () => eventsInActiveLanes.filter((event) => isEventInViewport(event, viewport)),
     [eventsInActiveLanes, viewport]
   );
+  const displayedSystemIds = useMemo(() => {
+    if (!hideEmptyLanes) return activeSystemIds;
+    const systemsWithVisibleEvents = new Set(
+      visibleEvents.map((event) => event.location.system)
+    );
+    return activeSystemIds.filter((id) => systemsWithVisibleEvents.has(id));
+  }, [activeSystemIds, hideEmptyLanes, visibleEvents]);
   const selectedEvent = useMemo(
     () => canonicalData.events.find(({ id }) => id === selectedEventId) ?? null,
     [selectedEventId]
@@ -93,12 +151,11 @@ function TimelineDisplay() {
     );
   };
 
-  const setBound = (bound, value) => {
-    const number = Number(value);
-    if (!Number.isFinite(number)) return;
-    setViewport((current) =>
-      clampViewport({ ...current, [bound]: number }, CHRONOLOGY_BOUNDS)
-    );
+  const commitBound = (bound, draft) => {
+    const result = applyViewportBoundDraft(viewport, bound, draft, CHRONOLOGY_BOUNDS);
+    if (result.error) return result.error;
+    setViewport(result.viewport);
+    return null;
   };
 
   const zoom = (factor) => {
@@ -217,6 +274,15 @@ function TimelineDisplay() {
             );
           })}
         </LaneControls>
+        <LaneDisplayControl>
+          <input
+            id="hide-empty-lanes"
+            type="checkbox"
+            checked={hideEmptyLanes}
+            onChange={(event) => setHideEmptyLanes(event.target.checked)}
+          />
+          <label htmlFor="hide-empty-lanes">Hide lanes with no events in the current view</label>
+        </LaneDisplayControl>
       </section>
 
       <TravelSection aria-labelledby="travel-heading">
@@ -270,40 +336,34 @@ function TimelineDisplay() {
         >
           {projectionMode === 'linear' ? 'Condense quiet spans' : 'Use linear chronology'}
         </ControlButton>
-        <ControlButton type="button" onClick={() => pan(-1)} aria-label="Pan earlier">
-          ← Earlier
-        </ControlButton>
-        <ControlButton type="button" onClick={() => zoom(0.5)} aria-label="Zoom in">
-          + Zoom in
-        </ControlButton>
-        <ControlButton type="button" onClick={() => zoom(2)} aria-label="Zoom out">
-          − Zoom out
-        </ControlButton>
-        <ControlButton type="button" onClick={() => pan(1)} aria-label="Pan later">
-          Later →
-        </ControlButton>
-        <YearField>
-          <label htmlFor="start-year">Start year</label>
-          <input
-            id="start-year"
-            type="number"
-            min={CHRONOLOGY_BOUNDS.start}
-            max={CHRONOLOGY_BOUNDS.end}
-            value={formatControlValue(viewport.start)}
-            onChange={(event) => setBound('start', event.target.value)}
-          />
-        </YearField>
-        <YearField>
-          <label htmlFor="end-year">End year</label>
-          <input
-            id="end-year"
-            type="number"
-            min={CHRONOLOGY_BOUNDS.start}
-            max={CHRONOLOGY_BOUNDS.end}
-            value={formatControlValue(viewport.end)}
-            onChange={(event) => setBound('end', event.target.value)}
-          />
-        </YearField>
+        <ControlGroup role="group" aria-label="Pan timeline">
+          <ControlButton type="button" onClick={() => pan(-1)} aria-label="Pan earlier">
+            ← Earlier
+          </ControlButton>
+          <ControlButton type="button" onClick={() => pan(1)} aria-label="Pan later">
+            Later →
+          </ControlButton>
+        </ControlGroup>
+        <ControlGroup role="group" aria-label="Zoom timeline">
+          <ControlButton type="button" onClick={() => zoom(0.5)} aria-label="Zoom in">
+            + Zoom in
+          </ControlButton>
+          <ControlButton type="button" onClick={() => zoom(2)} aria-label="Zoom out">
+            − Zoom out
+          </ControlButton>
+        </ControlGroup>
+        <YearBoundField
+          bound="start"
+          label="Start year"
+          value={viewport.start}
+          onCommit={commitBound}
+        />
+        <YearBoundField
+          bound="end"
+          label="End year"
+          value={viewport.end}
+          onCommit={commitBound}
+        />
       </ViewportControls>
 
       <Legend>
@@ -316,7 +376,7 @@ function TimelineDisplay() {
       <TimelineViewport
         systems={canonicalData.systems}
         events={filteredEvents}
-        activeSystemIds={activeSystemIds}
+        activeSystemIds={displayedSystemIds}
         viewport={viewport}
         selectedEventId={selectedEventId}
         worldhopperJourneys={activeWorldhopperJourneys}
@@ -432,6 +492,18 @@ const LaneControls = styled.div`
   gap: 0.5rem;
 `;
 
+const LaneDisplayControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+  color: #d8dedc;
+  font-size: 0.85rem;
+  text-align: left;
+
+  input { width: 1.15rem; height: 1.15rem; accent-color: #d59a47; }
+`;
+
 const TravelSection = styled.section`
   margin-top: 1rem;
   text-align: left;
@@ -493,6 +565,11 @@ const ViewportControls = styled.div`
   margin: 1rem 0 0.65rem;
 `;
 
+const ControlGroup = styled.div`
+  display: flex;
+  gap: 0.35rem;
+`;
+
 const ControlButton = styled.button`
   min-height: 2.5rem;
   padding: 0.45rem 0.75rem;
@@ -527,6 +604,13 @@ const YearField = styled.div`
     border: 1px solid #687576;
     border-radius: 0.25rem;
   }
+`;
+
+const YearError = styled.small`
+  width: 10rem;
+  color: #f0a78f;
+  font-size: 0.72rem;
+  line-height: 1.25;
 `;
 
 const Legend = styled.p`

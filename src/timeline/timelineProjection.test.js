@@ -1,4 +1,5 @@
 import {
+  applyViewportBoundDraft,
   clampViewport,
   createTimeProjection,
   createTimelineViewModel,
@@ -66,6 +67,27 @@ describe('timeline viewport math', () => {
     expect(panViewport({ start: 0, end: 400 }, -500, bounds)).toEqual({
       start: -100,
       end: 300,
+    });
+  });
+
+  test('applies complete whole-year drafts without mutating invalid viewports', () => {
+    const viewport = { start: 100, end: 500 };
+
+    expect(applyViewportBoundDraft(viewport, 'end', '700', bounds, 25)).toEqual({
+      viewport: { start: 100, end: 700 },
+      error: null,
+    });
+    expect(applyViewportBoundDraft(viewport, 'end', '1', bounds, 25)).toEqual({
+      viewport,
+      error: 'Start and end must be at least 25 years apart.',
+    });
+    expect(applyViewportBoundDraft(viewport, 'start', '12.5', bounds, 25)).toEqual({
+      viewport,
+      error: 'Enter a whole year.',
+    });
+    expect(applyViewportBoundDraft(viewport, 'start', '', bounds, 25)).toEqual({
+      viewport,
+      error: 'Enter a whole year.',
     });
   });
 });
