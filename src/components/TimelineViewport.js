@@ -159,6 +159,7 @@ function TimelineViewport({
         aria-label={`Cosmere chronology from ${viewport.start} to ${viewport.end}`}
         aria-describedby={descriptionId}
         onWheel={(wheelEvent) => {
+          if (!wheelEvent.ctrlKey && !wheelEvent.metaKey) return;
           wheelEvent.preventDefault();
           onZoom(wheelEvent.deltaY < 0 ? 0.8 : 1.25);
         }}
@@ -169,7 +170,8 @@ function TimelineViewport({
             ? 'A numeric chronology with long event-free spans condensed and marked by visible breaks.'
             : 'A linear numeric chronology.'}{' '}
           Curves connect adjacent, explicitly tagged worldhopper appearances. Select an event marker
-          to read its date and description.
+          to read its date and description. Hold Control or Command while scrolling to zoom the
+          chronology; ordinary scrolling continues through the page.
         </desc>
         <rect width={model.width} height={model.height} fill="#172021" rx="8" />
 

@@ -326,9 +326,20 @@ function TimelineDisplay() {
       />
 
       <SelectionStatus role="status" aria-label="Selected event details" aria-live="polite">
-        {selectedEvent
-          ? `${formatTimelineDate(selectedEvent.date)} — ${selectedEvent.description}`
-          : 'Select an event marker for its date and description.'}
+        <span>
+          {selectedEvent
+            ? `${formatTimelineDate(selectedEvent.date)} — ${selectedEvent.description}`
+            : 'Select an event marker for its date and description.'}
+        </span>
+        {selectedEvent && (
+          <DismissButton
+            type="button"
+            aria-label="Close event details"
+            onClick={() => setSelectedEventId(null)}
+          >
+            Close
+          </DismissButton>
+        )}
       </SelectionStatus>
     </Container>
   );
@@ -533,11 +544,28 @@ const ResultStatus = styled.p`
   text-align: left;
 `;
 
-const SelectionStatus = styled.p`
+const SelectionStatus = styled.div`
   min-height: 1.5rem;
   margin: 0.75rem 0 0;
   color: #d8dedc;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
   text-align: left;
+`;
+
+const DismissButton = styled.button`
+  flex: 0 0 auto;
+  padding: 0.3rem 0.6rem;
+  color: #f8f4e9;
+  background: transparent;
+  border: 1px solid #687576;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  &:hover { background: #283334; }
+  &:focus-visible { outline: 3px solid #f0b35a; outline-offset: 2px; }
 `;
 
 export default TimelineDisplay;

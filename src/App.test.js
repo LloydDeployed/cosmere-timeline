@@ -30,6 +30,21 @@ describe('timeline viewport', () => {
     expect(event).toHaveAttribute('aria-pressed', 'true');
   });
 
+  test('dismisses selected event details with an explicit close control', () => {
+    render(<App />);
+    const event = screen.getByRole('button', {
+      name: /-1050.*adonalsium creates roshar/i,
+    });
+
+    fireEvent.click(event);
+    fireEvent.click(screen.getByRole('button', { name: /close event details/i }));
+
+    expect(screen.getByRole('status', { name: /selected event details/i })).toHaveTextContent(
+      /select an event marker/i
+    );
+    expect(event).toHaveAttribute('aria-pressed', 'false');
+  });
+
   test('zooms and pans using bounded viewport controls', () => {
     render(<App />);
     const start = screen.getByLabelText(/start year/i);
@@ -42,6 +57,19 @@ describe('timeline viewport', () => {
     const zoomedStart = Number(start.value);
     fireEvent.click(screen.getByRole('button', { name: /pan earlier/i }));
     expect(Number(start.value)).toBeLessThan(zoomedStart);
+  });
+
+  test('leaves ordinary wheel scrolling alone and requires a modifier for wheel zoom', () => {
+    render(<App />);
+    const viewport = screen.getByRole('group', { name: /cosmere chronology/i });
+    const start = screen.getByLabelText(/start year/i);
+    const initialStart = start.value;
+
+    fireEvent.wheel(viewport, { deltaY: -100 });
+    expect(start).toHaveValue(Number(initialStart));
+
+    fireEvent.wheel(viewport, { deltaY: -100, ctrlKey: true });
+    expect(Number(start.value)).toBeGreaterThan(Number(initialStart));
   });
 
   test('toggles condensed chronology and exposes visible break markers', () => {
