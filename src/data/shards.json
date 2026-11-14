@@ -4,23 +4,23 @@
     "currentVessel": "Aona",
     "vesselLiving": false,
     "formerVessels": [],
-    "worlds": "Sel",
-    "books": ["Elantris, The Emperor's Soul"]
+    "worlds": ["Sel"],
+    "books": ["Elantris", "The Emperor's Soul"]
   },
   {
     "name": "Dominion",
     "currentVessel": "Skai",
     "vesselLiving": false,
     "formerVessels": [],
-    "worlds": "Sel",
-    "books": ["Elantris, The Emperor's Soul"]
+    "worlds": ["Sel"],
+    "books": ["Elantris", "The Emperor's Soul"]
   },
   {
     "name": "Preservation",
     "currentVessel": "Sazed",
     "vesselLiving": true,
-    "formerVessels": ["Leras, Kelsier, and Vin"],
-    "worlds": "Scadrial",
+    "formerVessels": ["Leras", "Kelsier", "Vin"],
+    "worlds": ["Scadrial"],
     "books": ["Mistborn"]
   },
   {
@@ -28,7 +28,7 @@
     "currentVessel": "Sazed",
     "vesselLiving": true,
     "formerVessels": ["Ati"],
-    "worlds": "Scadrial",
+    "worlds": ["Scadrial"],
     "books": ["Mistborn"]
   },
   {
@@ -37,7 +37,7 @@
     "vesselLiving": true,
     "formerVessels": ["Rayse"],
     "worlds": ["Braize", "Roshar"],
-    "books": "The Stormlight Archive"
+    "books": ["The Stormlight Archive"]
   },
   {
     "name": "Cultivation",
@@ -45,7 +45,7 @@
     "vesselLiving": true,
     "formerVessels": [],
     "worlds": ["Roshar"],
-    "books": "The Stormlight Archive"
+    "books": ["The Stormlight Archive"]
   },
   {
     "name": "Honor",
@@ -53,7 +53,7 @@
     "vesselLiving": true,
     "formerVessels": ["Tanavast", "Dalinar Kholin"],
     "worlds": ["Roshar"],
-    "books": "The Stormlight Archive"
+    "books": ["The Stormlight Archive"]
   },
   {
     "name": "Endowment",

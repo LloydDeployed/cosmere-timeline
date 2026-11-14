@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
+import { getEventPointYear } from '../utils/dataUtils';
 
 function Event({ event, color, system, min, max }) {
   const [open, setOpen] = useState(false);
-  const year = event?.year ?? 0;
+  const year = getEventPointYear(event) ?? 0;
   const percent = (year - min) / (max - min);
   const left = percent > 0.5;
 
@@ -17,8 +18,8 @@ function Event({ event, color, system, min, max }) {
     >
       <ContentWrapper>
         <EventBox className="event-box" $color={color} $left={left}>
-          <h3>Year: {event?.year}</h3>
-          <p>{event?.events}</p>
+          <h3>Year: {year}</h3>
+          <p>{event?.description}</p>
         </EventBox>
       </ContentWrapper>
     </Container>

@@ -1,8 +1,7 @@
 import styled from '@emotion/styled';
 import Timeline from './Timeline';
 import TimeScale from './TimeScale';
-import events from '../data/timelineEvents.json';
-import systemsData from '../data/systemsData.json';
+import canonicalData from '../data/canonicalData';
 import { addEventsToSystems, groupEventsBySystem } from '../utils/dataUtils';
 import { useRef, useState } from 'react';
 import useDebouncedState from '../hooks/useDebouncedState';
@@ -25,8 +24,8 @@ const marks = [
 ];
 
 const systemsWithEvents = addEventsToSystems(
-  systemsData,
-  groupEventsBySystem(events)
+  canonicalData.systems,
+  groupEventsBySystem(canonicalData.events)
 );
 
 function TimelineDisplay() {
@@ -77,7 +76,7 @@ function TimelineDisplay() {
           <SystemButton
             key={system}
             className={activeLines.includes(system) ? 'active' : 'inactive'}
-            $color={systemsData[system]?.color}
+            $color={systemsWithEvents[system]?.color}
             onClick={() => toggleActive(system)}
           >
             {system}

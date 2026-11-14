@@ -208,7 +208,12 @@
     "shards": []
   },
   {
-    "year": 10436.3,
+    "date": {
+      "kind": "point",
+      "value": 10436.3,
+      "precision": "approximate",
+      "confidence": "unknown"
+    },
     "system": "Roshar",
     "events": "End of the Hierocracy (approx.)",
     "books": [],
@@ -481,7 +486,12 @@
     "shards": []
   },
   {
-    "year": 15000,
+    "date": {
+      "kind": "point",
+      "value": 15000,
+      "precision": "approximate",
+      "confidence": "low"
+    },
     "system": "Canticle",
     "events": "The Sunlit Man (extremely rough estimate)",
     "books": ["The Sunlit Man"],

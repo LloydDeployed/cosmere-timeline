@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import EventLine from './EventLine';
+import { getEventPointYear } from '../utils/dataUtils';
 
 // TODO:
 // - clusters of events
@@ -11,7 +12,10 @@ function Line(props) {
 
   const { color, events } = system;
   const filteredEvents = events?.filter(
-    (event) => event.year >= min && event.year <= max
+    (event) => {
+      const year = getEventPointYear(event);
+      return year != null && year >= min && year <= max;
+    }
   );
   // console.log('filteredEvents?.length: ', filteredEvents?.length);
 

@@ -1,43 +1,34 @@
-|Title|Year|Publisher|
-|-|-|
-|Elantris|2005|	Tor Books		|
-|Warbreaker|2009|	Tor Books	|
-
-|The Final Empire|2006|	Tor Books	|
-|The Well of Ascension|2007|	Tor Books	|
-|The Hero of Ages|2008|	Tor Books	|
-Second Era
-|The Alloy of Law|2011|	Tor Books	|
-|Shadows of Self|2015|	Tor Books	|
-|The Bands of Mourning|2016|	Tor Books	|
-|The Lost Metal|2022|	Tor Books	|
-
-|The Way of Kings|2010|	Tor Books	|
-|Words of Radiance|2014|	Tor Books	|
-|Oathbringer|2017|	Tor Books	|
-|Rhythm of War|2020	Tor Books	|
-|Wind and Truth|2024|	Tor Books	|
-
-|Tress of the Emerald Sea|2023 |	Dragonsteel Entertainment	Secret Project 1	|
-|Yumi and the Nightmare Painter|2023 |	Dragonsteel Entertainment	Secret Project 3	|
-|The Sunlit Man|2023 |	Dragonsteel Entertainment	Secret Project 4	|
-|Isles of the Emberdark|2025 |	Dragonsteel Entertainment	Secret Project 5	|
-
-
-Title	Year	Series or setting	Format	First edition publisher/publication	Notes	Ref.
-"The Hope of Elantris"	2006	Elantris	Short story	Self-published	Collected in Arcanum Unbounded: The Cosmere Collection (2016).	[13][14]
-"The Eleventh Metal"	2011	Mistborn	Short story	Crafty Games	Published with the Mistborn Adventure Game. Collected in Arcanum Unbounded: The Cosmere Collection (2016).	[14][15]
-The Emperor's Soul	2012	Elantris	Novella	Tachyon Publications	Collected in Arcanum Unbounded: The Cosmere Collection (2016).	[2][14]
-Shadows for Silence in the Forests of Hell	2013	Threnody	Novella	Dangerous Women, edited by George R. R. Martin and Gardner Dozois. Tor Books	Printed as a standalone in 2015. Collected in Arcanum Unbounded: The Cosmere Collection (2016).	[14][16][17]
-Sixth of the Dusk	2014	First of the Sun	Novella	Shadows Beneath. Ebook, Dragonsteel Entertainment	Collected in Arcanum Unbounded: The Cosmere Collection (2016).	[18][14][19]
-"Allomancer Jak and the Pits of Eltania"	2014	Mistborn	Short story	Crafty Games	Part of the second "Mistborn" series. Published with the Mistborn Adventure Game. Collected in Arcanum Unbounded: The Cosmere Collection (2016).	[14][20]
-Secret History	2016	Mistborn	Novella	Ebook, Dragonsteel Entertainment[citation needed]	Collected in Arcanum Unbounded: The Cosmere Collection (2016).	[14]
-Arcanum Unbounded: The Cosmere Collection	2016	N/A	Collection	Tor Books		[21][14]
-Edgedancer	2016	The Stormlight Archive	Novella	Tor Books	First printed in Arcanum Unbounded: The Cosmere Collection (2016). Reprinted as a standalone in 2017.	[14][18]
-Dawnshard	2020	The Stormlight Archive	Novella	Ebook, Dragonsteel Entertainment	Printed on February 15, 2022.[22]	[23]
-
-Title	Year	Series or setting	Format	First edition publisher/publication	Notes	Ref.
-White Sand I	2016	Taldain	Graphic novel	Dynamite Entertainment	Written with Rik Hoskin. Illustrated by Julius Gopez and colored by Ross Campbell.	[24]
-White Sand II	2018	Taldain	Graphic novel	Dynamite Entertainment	Written with Rik Hoskin. Illustrated by Julius Gopez.	[25]
-White Sand III	2019	Taldain	Graphic novel	Dynamite Entertainment	Written with Rik Hoskin. Illustrated by Fritz Casas.	[26]
-White Sand Omnibus	2022	Taldain	Collection	Dynamite Entertainment	Includes new prologue and glossary (Ars Arcanum).	[27]
+[
+  { "title": "Elantris", "publicationYear": 2005, "publisher": "Tor Books" },
+  { "title": "Warbreaker", "publicationYear": 2009, "publisher": "Tor Books" },
+  { "title": "The Final Empire", "publicationYear": 2006, "publisher": "Tor Books" },
+  { "title": "The Well of Ascension", "publicationYear": 2007, "publisher": "Tor Books" },
+  { "title": "The Hero of Ages", "publicationYear": 2008, "publisher": "Tor Books" },
+  { "title": "The Alloy of Law", "publicationYear": 2011, "publisher": "Tor Books" },
+  { "title": "Shadows of Self", "publicationYear": 2015, "publisher": "Tor Books" },
+  { "title": "The Bands of Mourning", "publicationYear": 2016, "publisher": "Tor Books" },
+  { "title": "The Lost Metal", "publicationYear": 2022, "publisher": "Tor Books" },
+  { "title": "The Way of Kings", "publicationYear": 2010, "publisher": "Tor Books" },
+  { "title": "Words of Radiance", "publicationYear": 2014, "publisher": "Tor Books" },
+  { "title": "Oathbringer", "publicationYear": 2017, "publisher": "Tor Books" },
+  { "title": "Rhythm of War", "publicationYear": 2020, "publisher": "Tor Books" },
+  { "title": "Wind and Truth", "publicationYear": 2024, "publisher": "Tor Books" },
+  { "title": "Tress of the Emerald Sea", "publicationYear": 2023, "publisher": "Dragonsteel Entertainment", "notes": ["Secret Project 1"] },
+  { "title": "Yumi and the Nightmare Painter", "publicationYear": 2023, "publisher": "Dragonsteel Entertainment", "notes": ["Secret Project 3"] },
+  { "title": "The Sunlit Man", "publicationYear": 2023, "publisher": "Dragonsteel Entertainment", "notes": ["Secret Project 4"] },
+  { "title": "Isles of the Emberdark", "publicationYear": 2025, "publisher": "Dragonsteel Entertainment", "notes": ["Secret Project 5"] },
+  { "title": "The Hope of Elantris", "publicationYear": 2006, "seriesOrSetting": "Elantris", "format": "Short story", "publisher": "Self-published", "notes": ["Collected in Arcanum Unbounded: The Cosmere Collection (2016)."], "references": ["13", "14"] },
+  { "title": "The Eleventh Metal", "publicationYear": 2011, "seriesOrSetting": "Mistborn", "format": "Short story", "publisher": "Crafty Games", "notes": ["Published with the Mistborn Adventure Game.", "Collected in Arcanum Unbounded: The Cosmere Collection (2016)."], "references": ["14", "15"] },
+  { "title": "The Emperor's Soul", "publicationYear": 2012, "seriesOrSetting": "Elantris", "format": "Novella", "publisher": "Tachyon Publications", "notes": ["Collected in Arcanum Unbounded: The Cosmere Collection (2016)."], "references": ["2", "14"] },
+  { "title": "Shadows for Silence in the Forests of Hell", "publicationYear": 2013, "seriesOrSetting": "Threnody", "format": "Novella", "publisher": "Dangerous Women, edited by George R. R. Martin and Gardner Dozois. Tor Books", "notes": ["Printed as a standalone in 2015.", "Collected in Arcanum Unbounded: The Cosmere Collection (2016)."], "references": ["14", "16", "17"] },
+  { "title": "Sixth of the Dusk", "publicationYear": 2014, "seriesOrSetting": "First of the Sun", "format": "Novella", "publisher": "Shadows Beneath. Ebook, Dragonsteel Entertainment", "notes": ["Collected in Arcanum Unbounded: The Cosmere Collection (2016)."], "references": ["18", "14", "19"] },
+  { "title": "Allomancer Jak and the Pits of Eltania", "publicationYear": 2014, "seriesOrSetting": "Mistborn", "format": "Short story", "publisher": "Crafty Games", "notes": ["Part of the second Mistborn series.", "Published with the Mistborn Adventure Game.", "Collected in Arcanum Unbounded: The Cosmere Collection (2016)."], "references": ["14", "20"] },
+  { "title": "Secret History", "publicationYear": 2016, "seriesOrSetting": "Mistborn", "format": "Novella", "publisher": "Ebook, Dragonsteel Entertainment", "notes": ["Publisher marked citation needed in the source table."], "references": ["14"] },
+  { "title": "Arcanum Unbounded: The Cosmere Collection", "publicationYear": 2016, "seriesOrSetting": "N/A", "format": "Collection", "publisher": "Tor Books", "references": ["21", "14"] },
+  { "title": "Edgedancer", "publicationYear": 2016, "seriesOrSetting": "The Stormlight Archive", "format": "Novella", "publisher": "Tor Books", "notes": ["First printed in Arcanum Unbounded: The Cosmere Collection (2016).", "Reprinted as a standalone in 2017."], "references": ["14", "18"] },
+  { "title": "Dawnshard", "publicationYear": 2020, "seriesOrSetting": "The Stormlight Archive", "format": "Novella", "publisher": "Ebook, Dragonsteel Entertainment", "notes": ["Printed on February 15, 2022."], "references": ["22", "23"] },
+  { "title": "White Sand I", "publicationYear": 2016, "seriesOrSetting": "Taldain", "format": "Graphic novel", "publisher": "Dynamite Entertainment", "notes": ["Written with Rik Hoskin.", "Illustrated by Julius Gopez and colored by Ross Campbell."], "references": ["24"] },
+  { "title": "White Sand II", "publicationYear": 2018, "seriesOrSetting": "Taldain", "format": "Graphic novel", "publisher": "Dynamite Entertainment", "notes": ["Written with Rik Hoskin.", "Illustrated by Julius Gopez."], "references": ["25"] },
+  { "title": "White Sand III", "publicationYear": 2019, "seriesOrSetting": "Taldain", "format": "Graphic novel", "publisher": "Dynamite Entertainment", "notes": ["Written with Rik Hoskin.", "Illustrated by Fritz Casas."], "references": ["26"] },
+  { "title": "White Sand Omnibus", "publicationYear": 2022, "seriesOrSetting": "Taldain", "format": "Collection", "publisher": "Dynamite Entertainment", "notes": ["Includes new prologue and glossary (Ars Arcanum)."], "references": ["27"] }
+]

@@ -2,7 +2,7 @@
 export const groupEventsBySystem = (events) => {
   const systems = {};
   events.forEach((event) => {
-    const { system } = event;
+    const system = event.location.system;
     if (!systems[system]) {
       systems[system] = [];
     }
@@ -13,15 +13,17 @@ export const groupEventsBySystem = (events) => {
 
 export const addEventsToSystems = (systems, events) => {
   const systemsWithEvents = {};
-  Object.keys(systems).forEach((system) => {
-    systemsWithEvents[system] = {
-      ...systems[system],
-      name: system,
-      events: events[system],
+  systems.forEach((system) => {
+    systemsWithEvents[system.id] = {
+      ...system,
+      events: events[system.id] ?? [],
     };
   });
   
   return systemsWithEvents;
 }
+
+export const getEventPointYear = (event) =>
+  event.date.kind === 'point' ? event.date.value : null;
 
 

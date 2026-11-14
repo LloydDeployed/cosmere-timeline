@@ -17,7 +17,7 @@ function EventLine(props) {
       {events?.map((event) => {
         return (
           <Event
-            key={event.events}
+            key={event.id}
             system={system.name}
             event={event}
             color={color}

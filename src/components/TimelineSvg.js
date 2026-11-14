@@ -1,10 +1,15 @@
+import { getEventPointYear } from '../utils/dataUtils';
+
 // TODO: design collapse for when not active with animation
 
 function TimelineSvg(props) {
-  const { system, min, max, active, index } = props;
+  const { system, min, max, index } = props;
   const { color, events } = system;
   const filteredEvents =
-    events?.filter((event) => event.year >= min && event.year <= max) ?? [];
+    events?.filter((event) => {
+      const year = getEventPointYear(event);
+      return year != null && year >= min && year <= max;
+    }) ?? [];
 
   return (
     <g transform={`translate(0, ${index * 25})`}>
@@ -25,7 +30,7 @@ function TimelineSvg(props) {
       {filteredEvents.map((event, i) => (
         <circle
           key={i}
-          cx={`${7 + ((event.year - min) / (max - min)) * 86}%`}
+          cx={`${7 + ((getEventPointYear(event) - min) / (max - min)) * 86}%`}
           cy="8"
           r="3"
           fill={color}
