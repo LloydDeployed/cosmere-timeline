@@ -126,6 +126,7 @@ function TimelineViewport({
   viewport,
   selectedEventId,
   worldhopperJourneys,
+  projectionMode,
   onSelectEvent,
   onZoom,
 }) {
@@ -137,9 +138,10 @@ function TimelineViewport({
       activeSystemIds,
       viewport,
       worldhopperJourneys,
+      projectionMode,
       width: WIDTH,
     }),
-    [systems, events, activeSystemIds, viewport, worldhopperJourneys]
+    [systems, events, activeSystemIds, viewport, worldhopperJourneys, projectionMode]
   );
   const selected = events.find(({ id }) => id === selectedEventId);
   const selectedLane = selected ? model.lanes.find(({ id }) => id === selected.location.system) : null;
@@ -163,8 +165,11 @@ function TimelineViewport({
       >
         <title>Cosmere chronology</title>
         <desc id={descriptionId}>
-          A linear numeric chronology. Curves connect adjacent, explicitly tagged worldhopper
-          appearances. Select an event marker to read its date and description.
+          {model.projection.mode === 'condensed'
+            ? 'A numeric chronology with long event-free spans condensed and marked by visible breaks.'
+            : 'A linear numeric chronology.'}{' '}
+          Curves connect adjacent, explicitly tagged worldhopper appearances. Select an event marker
+          to read its date and description.
         </desc>
         <rect width={model.width} height={model.height} fill="#172021" rx="8" />
 
@@ -176,6 +181,19 @@ function TimelineViewport({
             </g>
           ))}
         </g>
+
+        {model.projection.breaks.map((gap) => (
+          <g key={`${gap.start}-${gap.end}`} data-testid="timeline-break" aria-label={`Chronology break from ${gap.start} to ${gap.end}`}>
+            <path
+              d={`M ${gap.x - 7} 34 l 7 8 l 7 -8 M ${gap.x - 7} 42 l 7 8 l 7 -8`}
+              fill="none"
+              stroke="#f4c36a"
+              strokeWidth="2"
+              aria-hidden="true"
+            />
+            <title>Chronology break: {gap.end - gap.start} event-free years</title>
+          </g>
+        ))}
 
         <g aria-hidden="true" data-testid="worldhopper-paths">
           {model.travelPaths.map((path) => (

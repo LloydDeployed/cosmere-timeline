@@ -1,5 +1,6 @@
 import {
   clampViewport,
+  createTimeProjection,
   createTimelineViewModel,
   panViewport,
   zoomViewport,
@@ -8,6 +9,35 @@ import {
 const bounds = { start: -100, end: 900 };
 
 describe('timeline viewport math', () => {
+  test('condenses only large event-free spans and exposes deterministic break markers', () => {
+    const projection = createTimeProjection({
+      viewport: { start: 0, end: 10000 },
+      eventDates: [0, 100, 9000, 10000],
+      width: 1000,
+      gapThreshold: 1000,
+      condensedGap: 100,
+    });
+
+    expect(projection.mode).toBe('condensed');
+    expect(projection.breaks).toEqual([{ start: 100, end: 9000, x: 125 }]);
+    expect(projection.project(0)).toBe(0);
+    expect(projection.project(100)).toBeCloseTo(83.33);
+    expect(projection.project(9000)).toBeCloseTo(166.67);
+    expect(projection.project(10000)).toBe(1000);
+  });
+
+  test('linear projection preserves the original chronology coordinates', () => {
+    const projection = createTimeProjection({
+      viewport: { start: 0, end: 10000 },
+      eventDates: [0, 100, 9000, 10000],
+      width: 1000,
+      mode: 'linear',
+    });
+
+    expect(projection.breaks).toEqual([]);
+    expect(projection.project(2500)).toBe(250);
+  });
+
   test('clamps reversed, undersized, and out-of-bounds viewports', () => {
     expect(clampViewport({ start: 950, end: -200 }, bounds, 100)).toEqual(bounds);
     expect(clampViewport({ start: -200, end: 0 }, bounds, 100)).toEqual({

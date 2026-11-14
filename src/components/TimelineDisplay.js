@@ -22,6 +22,7 @@ const formatControlValue = (value) => Number(value.toFixed(2));
 
 function TimelineDisplay() {
   const [viewport, setViewport] = useState(CHRONOLOGY_BOUNDS);
+  const [projectionMode, setProjectionMode] = useState('condensed');
   const [activeSystemIds, setActiveSystemIds] = useState(() =>
     canonicalData.systems.map(({ id }) => id)
   );
@@ -262,6 +263,13 @@ function TimelineDisplay() {
       </ResultStatus>
 
       <ViewportControls aria-label="Timeline viewport controls">
+        <ControlButton
+          type="button"
+          aria-pressed={projectionMode === 'linear'}
+          onClick={() => setProjectionMode((current) => (current === 'linear' ? 'condensed' : 'linear'))}
+        >
+          {projectionMode === 'linear' ? 'Condense quiet spans' : 'Use linear chronology'}
+        </ControlButton>
         <ControlButton type="button" onClick={() => pan(-1)} aria-label="Pan earlier">
           ← Earlier
         </ControlButton>
@@ -299,7 +307,9 @@ function TimelineDisplay() {
       </ViewportControls>
 
       <Legend>
-        The chronology stays linear, including long quiet eras. Zoom to inspect dense eras.
+        {projectionMode === 'condensed'
+          ? 'Long event-free spans are condensed; break markers show where chronology skips.'
+          : 'Chronology is shown at a linear scale, including long quiet eras.'}{' '}
         Hollow markers and ≈ labels preserve approximate or unknown date precision.
       </Legend>
 
@@ -310,6 +320,7 @@ function TimelineDisplay() {
         viewport={viewport}
         selectedEventId={selectedEventId}
         worldhopperJourneys={activeWorldhopperJourneys}
+        projectionMode={projectionMode}
         onSelectEvent={setSelectedEventId}
         onZoom={zoom}
       />

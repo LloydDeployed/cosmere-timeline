@@ -44,6 +44,21 @@ describe('timeline viewport', () => {
     expect(Number(start.value)).toBeLessThan(zoomedStart);
   });
 
+  test('toggles condensed chronology and exposes visible break markers', () => {
+    const { container } = render(<App />);
+
+    expect(container.querySelectorAll('[data-testid="timeline-break"]').length).toBeGreaterThan(0);
+    const linearToggle = screen.getByRole('button', { name: /use linear chronology/i });
+    fireEvent.click(linearToggle);
+
+    expect(linearToggle).toHaveAttribute('aria-pressed', 'true');
+    expect(container.querySelectorAll('[data-testid="timeline-break"]')).toHaveLength(0);
+    expect(screen.getByText(/chronology is shown at a linear scale/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /condense quiet spans/i }));
+    expect(container.querySelectorAll('[data-testid="timeline-break"]').length).toBeGreaterThan(0);
+  });
+
   test('filters story text, reports visible results, and clears filters without resetting viewport', () => {
     render(<App />);
     const start = screen.getByLabelText(/start year/i);

@@ -2,6 +2,8 @@ import { projectWorldhopperPaths } from './timelineTravel';
 
 export const CHRONOLOGY_BOUNDS = { start: -1100, end: 16050 };
 export const MIN_VIEWPORT_SPAN = 25;
+export const CONDENSED_GAP_THRESHOLD = 1000;
+export const CONDENSED_GAP_SPAN = 120;
 
 const finiteOr = (value, fallback) => {
   const number = Number(value);
@@ -106,6 +108,60 @@ export const isEventInViewport = (event, viewport) => {
   return event.date.value >= viewport.start && event.date.value <= viewport.end;
 };
 
+const numericEventDates = (events) => events.flatMap((event) => {
+  if (event.date.kind === 'point') return [event.date.value];
+  if (event.date.kind === 'range') return [event.date.start, event.date.end];
+  return [];
+});
+
+export const createTimeProjection = ({
+  viewport,
+  eventDates = [],
+  width,
+  mode = 'condensed',
+  gapThreshold = CONDENSED_GAP_THRESHOLD,
+  condensedGap = CONDENSED_GAP_SPAN,
+}) => {
+  const span = viewport.end - viewport.start;
+  const plotLeft = 0;
+  const plotRight = width;
+  const dates = [...new Set(eventDates
+    .filter(Number.isFinite)
+    .map((date) => Math.min(viewport.end, Math.max(viewport.start, date))))]
+    .sort((a, b) => a - b);
+  const candidates = mode === 'condensed'
+    ? dates.slice(1).map((end, index) => ({ start: dates[index], end }))
+      .filter(({ start, end }) => end - start > gapThreshold)
+    : [];
+  const safeCondensedGap = Math.max(0, Number.isFinite(condensedGap) ? condensedGap : 0);
+  const weightedSpan = span - candidates.reduce(
+    (total, gap) => total + (gap.end - gap.start - safeCondensedGap),
+    0
+  );
+  const projectRaw = (year) => {
+    const clamped = Math.min(viewport.end, Math.max(viewport.start, year));
+    const compressedBefore = candidates.reduce((total, gap) => {
+      if (clamped <= gap.start) return total;
+      return total + Math.min(clamped, gap.end) - gap.start
+        - Math.min(safeCondensedGap, Math.max(0, clamped - gap.start));
+    }, 0);
+    return plotLeft + ((clamped - viewport.start - compressedBefore) / weightedSpan)
+      * (plotRight - plotLeft);
+  };
+  const breaks = candidates.map((gap) => ({
+    ...gap,
+    x: (projectRaw(gap.start) + projectRaw(gap.end)) / 2,
+  }));
+
+  return {
+    mode: mode === 'linear' ? 'linear' : 'condensed',
+    breaks,
+    project: mode === 'linear' ? (year) => (
+      plotLeft + ((year - viewport.start) / span) * (plotRight - plotLeft)
+    ) : projectRaw,
+  };
+};
+
 const makeTicks = (viewport, count = 8) => {
   const span = viewport.end - viewport.start;
   const rawStep = span / count;
@@ -128,12 +184,21 @@ export const createTimelineViewModel = ({
   viewport,
   worldhopperJourneys = [],
   width = 1000,
+  projectionMode = 'condensed',
 }) => {
   const plot = { left: 150, right: width - 50 };
   const plotWidth = plot.right - plot.left;
-  const span = viewport.end - viewport.start;
   const active = new Set(activeSystemIds);
-  const project = (year) => plot.left + ((year - viewport.start) / span) * plotWidth;
+  const projectionEvents = events.filter(
+    (event) => active.has(event.location.system) && isEventInViewport(event, viewport)
+  );
+  const timeProjection = createTimeProjection({
+    viewport,
+    eventDates: numericEventDates(projectionEvents),
+    width: plotWidth,
+    mode: projectionMode,
+  });
+  const project = (year) => plot.left + timeProjection.project(year);
 
   const lanes = systems
     .filter((system) => active.has(system.id))
@@ -179,6 +244,10 @@ export const createTimelineViewModel = ({
   return {
     width,
     plot,
+    projection: {
+      ...timeProjection,
+      breaks: timeProjection.breaks.map((gap) => ({ ...gap, x: gap.x + plot.left })),
+    },
     lanes,
     travelPaths: projectWorldhopperPaths({ journeys: worldhopperJourneys, lanes }),
     ticks: makeTicks(viewport).map((year) => ({ year, x: project(year) })),
