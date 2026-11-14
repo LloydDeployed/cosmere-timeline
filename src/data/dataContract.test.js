@@ -2,6 +2,7 @@ import books from './books.json';
 import shards from './shards.json';
 import systems from './systemsData.json';
 import events from './timelineEvents.json';
+import worldhoppers from './worldhoppers.json';
 import {
   normalizeCanonicalData,
   normalizeTimelineDate,
@@ -10,11 +11,12 @@ import {
 
 describe('timeline data contract', () => {
   test('loads and validates every canonical dataset', () => {
-    const canonical = normalizeCanonicalData({ books, shards, systems, events });
+    const canonical = normalizeCanonicalData({ books, shards, systems, events, worldhoppers });
 
     expect(() => validateCanonicalData(canonical)).not.toThrow();
     expect(canonical.events).toHaveLength(events.length);
     expect(canonical.systems).toHaveLength(Object.keys(systems).length);
+    expect(canonical.worldhoppers).toHaveLength(worldhoppers.length);
     expect(
       canonical.events.find((event) =>
         event.description.includes('extremely rough estimate')
@@ -64,6 +66,67 @@ describe('timeline data contract', () => {
     expect(canonical.events[0].characters).toEqual(['Hoid', 'Kaladin']);
     expect(canonical.events[1].characters).toEqual([]);
     expect(() => validateCanonicalData(canonical)).not.toThrow();
+  });
+
+  test('normalizes sourced worldhopper appearances and derives event character tags', () => {
+    const worldhoppers = [
+      {
+        id: 'hoid',
+        name: 'Hoid',
+        color: '#f4c36a',
+        appearances: [
+          { eventId: events[0].id, source: 'Primary source A' },
+          {
+            eventId: events[1].id,
+            source: { label: 'Primary source B' },
+            note: 'Story-level anchor only.',
+          },
+        ],
+      },
+    ];
+    const canonical = normalizeCanonicalData({
+      books,
+      shards,
+      systems,
+      events,
+      worldhoppers,
+    });
+
+    expect(canonical.worldhoppers[0]).toMatchObject({
+      id: 'hoid',
+      name: 'Hoid',
+      appearances: [
+        { eventId: events[0].id, source: { label: 'Primary source A' } },
+        { eventId: events[1].id, note: 'Story-level anchor only.' },
+      ],
+    });
+    expect(canonical.events[0].characters).toContain('Hoid');
+    expect(canonical.events[1].characters).toContain('Hoid');
+    expect(() => validateCanonicalData(canonical)).not.toThrow();
+  });
+
+  test('rejects an appearance that references an unknown event', () => {
+    const canonical = normalizeCanonicalData({
+      books,
+      shards,
+      systems,
+      events,
+      worldhoppers: [
+        {
+          id: 'hoid',
+          name: 'Hoid',
+          color: '#f4c36a',
+          appearances: [
+            { eventId: events[0].id, source: 'Primary source A' },
+            { eventId: 'missing-event', source: 'Primary source B' },
+          ],
+        },
+      ],
+    });
+
+    expect(() => validateCanonicalData(canonical)).toThrow(
+      /worldhoppers\[0\]\.appearances\[1\]\.eventId.*missing-event/
+    );
   });
 
   test('models point dates without blocking ranges or ordering-only dates', () => {

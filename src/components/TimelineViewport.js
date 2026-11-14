@@ -119,11 +119,27 @@ function SelectionCard({ event, color, x, y, plot }) {
   );
 }
 
-function TimelineViewport({ systems, events, activeSystemIds, viewport, selectedEventId, onSelectEvent, onZoom }) {
+function TimelineViewport({
+  systems,
+  events,
+  activeSystemIds,
+  viewport,
+  selectedEventId,
+  worldhopperJourneys,
+  onSelectEvent,
+  onZoom,
+}) {
   const descriptionId = useId();
   const model = useMemo(
-    () => createTimelineViewModel({ systems, events, activeSystemIds, viewport, width: WIDTH }),
-    [systems, events, activeSystemIds, viewport]
+    () => createTimelineViewModel({
+      systems,
+      events,
+      activeSystemIds,
+      viewport,
+      worldhopperJourneys,
+      width: WIDTH,
+    }),
+    [systems, events, activeSystemIds, viewport, worldhopperJourneys]
   );
   const selected = events.find(({ id }) => id === selectedEventId);
   const selectedLane = selected ? model.lanes.find(({ id }) => id === selected.location.system) : null;
@@ -147,7 +163,8 @@ function TimelineViewport({ systems, events, activeSystemIds, viewport, selected
       >
         <title>Cosmere chronology</title>
         <desc id={descriptionId}>
-          A linear numeric chronology. Select an event marker to read its date and description.
+          A linear numeric chronology. Curves connect adjacent, explicitly tagged worldhopper
+          appearances. Select an event marker to read its date and description.
         </desc>
         <rect width={model.width} height={model.height} fill="#172021" rx="8" />
 
@@ -157,6 +174,22 @@ function TimelineViewport({ systems, events, activeSystemIds, viewport, selected
               <line x1={x} x2={x} y1="42" y2={model.height - 28} stroke="#536061" strokeWidth="1" strokeDasharray="3 6" />
               <text x={x} y="28" fill="#c8cfcd" textAnchor="middle" fontSize="12">{year}</text>
             </g>
+          ))}
+        </g>
+
+        <g aria-hidden="true" data-testid="worldhopper-paths">
+          {model.travelPaths.map((path) => (
+            <path
+              key={path.id}
+              data-worldhopper={path.worldhopperId}
+              d={path.d}
+              fill="none"
+              stroke={path.color}
+              strokeWidth="4"
+              strokeDasharray="8 5"
+              strokeLinecap="round"
+              opacity="0.82"
+            />
           ))}
         </g>
 

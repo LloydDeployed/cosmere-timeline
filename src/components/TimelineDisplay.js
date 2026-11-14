@@ -16,6 +16,7 @@ import {
   filterTimelineEvents,
   getFilterOptions,
 } from '../timeline/timelineFilters';
+import { deriveWorldhopperJourneys } from '../timeline/timelineTravel';
 
 const formatControlValue = (value) => Number(value.toFixed(2));
 
@@ -26,8 +27,22 @@ function TimelineDisplay() {
   );
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [filters, setFilters] = useState(createEmptyFilters);
+  const [activeWorldhopperIds, setActiveWorldhopperIds] = useState(() =>
+    canonicalData.worldhoppers.map(({ id }) => id)
+  );
   const filterOptions = useMemo(() => getFilterOptions(canonicalData.events), []);
   const spoilerMetadata = useMemo(() => countSpoilerMetadata(canonicalData.events), []);
+  const worldhopperJourneys = useMemo(
+    () => deriveWorldhopperJourneys({
+      worldhoppers: canonicalData.worldhoppers,
+      events: canonicalData.events,
+    }),
+    []
+  );
+  const activeWorldhopperJourneys = useMemo(
+    () => worldhopperJourneys.filter(({ id }) => activeWorldhopperIds.includes(id)),
+    [activeWorldhopperIds, worldhopperJourneys]
+  );
   const filteredEvents = useMemo(
     () => filterTimelineEvents(canonicalData.events, filters),
     [filters]
@@ -58,6 +73,7 @@ function TimelineDisplay() {
   const clearFilters = () => {
     setFilters(createEmptyFilters());
     setActiveSystemIds(canonicalData.systems.map(({ id }) => id));
+    setActiveWorldhopperIds(canonicalData.worldhoppers.map(({ id }) => id));
   };
 
   const toggleSystem = (systemId) => {
@@ -65,6 +81,14 @@ function TimelineDisplay() {
       current.includes(systemId)
         ? current.filter((id) => id !== systemId)
         : [...current, systemId]
+    );
+  };
+
+  const toggleWorldhopper = (worldhopperId) => {
+    setActiveWorldhopperIds((current) =>
+      current.includes(worldhopperId)
+        ? current.filter((id) => id !== worldhopperId)
+        : [...current, worldhopperId]
     );
   };
 
@@ -194,6 +218,44 @@ function TimelineDisplay() {
         </LaneControls>
       </section>
 
+      <TravelSection aria-labelledby="travel-heading">
+        <ControlHeading id="travel-heading">Worldhopper travel</ControlHeading>
+        <TravelControls>
+          {canonicalData.worldhoppers.map((worldhopper) => {
+            const isActive = activeWorldhopperIds.includes(worldhopper.id);
+            return (
+              <TravelButton
+                key={worldhopper.id}
+                type="button"
+                aria-label={`${worldhopper.name} travel path`}
+                aria-pressed={isActive}
+                $active={isActive}
+                $color={worldhopper.color}
+                onClick={() => toggleWorldhopper(worldhopper.id)}
+              >
+                {worldhopper.name}
+              </TravelButton>
+            );
+          })}
+        </TravelControls>
+        <MetadataNote>
+          Curves connect adjacent, explicitly tagged story appearances. They show chronology, not
+          an exact route or arrival date, and disappear when either anchor is filtered or outside
+          the viewport.
+        </MetadataNote>
+        <SourceDisclosure>
+          <summary>Appearance sources and limitations</summary>
+          {canonicalData.worldhoppers.map((worldhopper) => (
+            <div key={worldhopper.id}>
+              <strong>{worldhopper.name}:</strong>{' '}
+              {worldhopper.appearances.map(({ eventId, source }) =>
+                `${eventId} — ${source.label}`
+              ).join('; ')}
+            </div>
+          ))}
+        </SourceDisclosure>
+      </TravelSection>
+
       <ResultStatus role="status" aria-label="Filter results" aria-live="polite">
         {eventsInActiveLanes.length} matching {eventsInActiveLanes.length === 1 ? 'event' : 'events'} in
         active lanes; {visibleEvents.length} in the current viewport.
@@ -247,6 +309,7 @@ function TimelineDisplay() {
         activeSystemIds={activeSystemIds}
         viewport={viewport}
         selectedEventId={selectedEventId}
+        worldhopperJourneys={activeWorldhopperJourneys}
         onSelectEvent={setSelectedEventId}
         onZoom={zoom}
       />
@@ -345,6 +408,43 @@ const LaneControls = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+`;
+
+const TravelSection = styled.section`
+  margin-top: 1rem;
+  text-align: left;
+`;
+
+const TravelControls = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const TravelButton = styled.button`
+  padding: 0.45rem 0.75rem;
+  color: #f8f4e9;
+  background: #202829;
+  border: 1px solid ${({ $active, $color }) => ($active ? $color : '#566061')};
+  border-bottom-width: 0.3rem;
+  border-radius: 0.25rem;
+  opacity: ${({ $active }) => ($active ? 1 : 0.55)};
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid #f0b35a;
+    outline-offset: 2px;
+  }
+`;
+
+const SourceDisclosure = styled.details`
+  margin-top: 0.5rem;
+  color: #aab4b2;
+  font-size: 0.75rem;
+  line-height: 1.5;
+
+  summary { color: #d8dedc; cursor: pointer; }
+  div { margin-top: 0.35rem; }
 `;
 
 const LaneButton = styled.button`

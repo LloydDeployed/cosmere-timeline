@@ -45,6 +45,19 @@ export const normalizeTimelineDate = (date) => {
 const normalizeSource = (source) =>
   typeof source === 'string' ? { label: source } : { ...source };
 
+const normalizeAppearance = (appearance) => ({
+  eventId: appearance.eventId,
+  source: normalizeSource(appearance.source),
+  note: appearance.note ?? null,
+});
+
+const normalizeWorldhopper = (worldhopper) => ({
+  id: worldhopper.id ?? slugify(worldhopper.name),
+  name: worldhopper.name,
+  color: worldhopper.color,
+  appearances: asArray(worldhopper.appearances).map(normalizeAppearance),
+});
+
 const normalizeSpoilerScope = (scope = {}) => ({
   books: normalizeStringArray(scope.books),
   series: normalizeStringArray(scope.series),
@@ -97,12 +110,36 @@ const normalizeEvent = (event) => ({
   spoilerScope: normalizeSpoilerScope(event.spoilerScope),
 });
 
-export const normalizeCanonicalData = ({ books, shards, systems, events }) => ({
-  books: books.map(normalizeBook),
-  shards: shards.map(normalizeShard),
-  systems: normalizeSystems(systems),
-  events: events.map(normalizeEvent),
-});
+export const normalizeCanonicalData = ({
+  books,
+  shards,
+  systems,
+  events,
+  worldhoppers = [],
+}) => {
+  const normalizedWorldhoppers = worldhoppers.map(normalizeWorldhopper);
+  const appearanceNamesByEvent = normalizedWorldhoppers.reduce((byEvent, worldhopper) => {
+    worldhopper.appearances.forEach(({ eventId }) => {
+      const names = byEvent.get(eventId) ?? [];
+      byEvent.set(eventId, [...names, worldhopper.name]);
+    });
+    return byEvent;
+  }, new Map());
+  const normalizedEvents = events.map(normalizeEvent).map((event) => ({
+    ...event,
+    characters: [
+      ...new Set([...event.characters, ...(appearanceNamesByEvent.get(event.id) ?? [])]),
+    ],
+  }));
+
+  return {
+    books: books.map(normalizeBook),
+    shards: shards.map(normalizeShard),
+    systems: normalizeSystems(systems),
+    events: normalizedEvents,
+    worldhoppers: normalizedWorldhoppers,
+  };
+};
 
 const isNonEmptyString = (value) =>
   typeof value === 'string' && value.trim().length > 0;
@@ -169,7 +206,7 @@ export class DataValidationError extends Error {
 
 export const validateCanonicalData = (data) => {
   const errors = [];
-  const collections = ['books', 'shards', 'systems', 'events'];
+  const collections = ['books', 'shards', 'systems', 'events', 'worldhoppers'];
   collections.forEach((name) => {
     if (!Array.isArray(data?.[name])) errors.push(`${name} must be an array`);
   });
@@ -179,6 +216,7 @@ export const validateCanonicalData = (data) => {
   validateUniqueIds(data.shards, 'shards', errors);
   validateUniqueIds(data.systems, 'systems', errors);
   validateUniqueIds(data.events, 'events', errors);
+  validateUniqueIds(data.worldhoppers, 'worldhoppers', errors);
 
   data.books.forEach((book, index) => {
     if (!isNonEmptyString(book.title)) errors.push(`books[${index}].title must be a non-empty string`);
@@ -235,6 +273,38 @@ export const validateCanonicalData = (data) => {
     }
     validateStringArray(event.spoilerScope?.books, `events[${index}].spoilerScope.books`, errors);
     validateStringArray(event.spoilerScope?.series, `events[${index}].spoilerScope.series`, errors);
+  });
+
+  const eventIds = new Set(data.events.map((event) => event.id));
+  data.worldhoppers.forEach((worldhopper, index) => {
+    if (!isNonEmptyString(worldhopper.name)) {
+      errors.push(`worldhoppers[${index}].name must be a non-empty string`);
+    }
+    if (!isNonEmptyString(worldhopper.color)) {
+      errors.push(`worldhoppers[${index}].color must be a non-empty string`);
+    }
+    if (!Array.isArray(worldhopper.appearances) || worldhopper.appearances.length < 2) {
+      errors.push(`worldhoppers[${index}].appearances must contain at least two appearances`);
+      return;
+    }
+    const seenEventIds = new Set();
+    worldhopper.appearances.forEach((appearance, appearanceIndex) => {
+      const path = `worldhoppers[${index}].appearances[${appearanceIndex}]`;
+      if (!eventIds.has(appearance.eventId)) {
+        errors.push(
+          `${path}.eventId references unknown event ${JSON.stringify(appearance.eventId)}`
+        );
+      } else if (seenEventIds.has(appearance.eventId)) {
+        errors.push(`${path}.eventId duplicates ${JSON.stringify(appearance.eventId)}`);
+      }
+      seenEventIds.add(appearance.eventId);
+      if (!isNonEmptyString(appearance.source?.label)) {
+        errors.push(`${path}.source.label must be a non-empty string`);
+      }
+      if (appearance.note != null && !isNonEmptyString(appearance.note)) {
+        errors.push(`${path}.note must be null or a non-empty string`);
+      }
+    });
   });
 
   if (errors.length) throw new DataValidationError(errors);

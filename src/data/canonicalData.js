@@ -2,10 +2,11 @@ import books from './books.json';
 import events from './timelineEvents.json';
 import shards from './shards.json';
 import systems from './systemsData.json';
+import worldhoppers from './worldhoppers.json';
 import { normalizeCanonicalData, validateCanonicalData } from './dataContract';
 
 const canonicalData = validateCanonicalData(
-  normalizeCanonicalData({ books, events, shards, systems })
+  normalizeCanonicalData({ books, events, shards, systems, worldhoppers })
 );
 
 export default canonicalData;

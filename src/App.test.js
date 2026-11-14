@@ -76,12 +76,30 @@ describe('timeline viewport', () => {
     expect(screen.getByRole('status', { name: /selected event details/i })).toHaveTextContent(/select an event marker/i);
   });
 
-  test('discloses absent character and spoiler metadata instead of inferring it', () => {
+  test('derives character filters from sourced appearances and discloses absent spoiler metadata', () => {
     render(<App />);
 
-    expect(screen.getByLabelText(/character/i)).toBeDisabled();
+    expect(screen.getByLabelText(/character/i)).toBeEnabled();
+    expect(screen.getByRole('option', { name: 'Hoid' })).toBeInTheDocument();
     expect(screen.getByLabelText(/hide events with explicit spoiler metadata/i)).toBeDisabled();
-    expect(screen.getByText(/no events have canonical character tags yet/i)).toBeInTheDocument();
     expect(screen.getByText(/events lack explicit spoiler metadata/i)).toBeInTheDocument();
+  });
+
+  test('toggles individual travel paths and never bridges filtered-out appearances', () => {
+    const { container } = render(<App />);
+    const hoidToggle = screen.getByRole('button', { name: /hoid travel path/i });
+
+    expect(hoidToggle).toHaveAttribute('aria-pressed', 'true');
+    expect(container.querySelectorAll('[data-worldhopper="hoid"]')).toHaveLength(3);
+
+    fireEvent.click(hoidToggle);
+    expect(hoidToggle).toHaveAttribute('aria-pressed', 'false');
+    expect(container.querySelectorAll('[data-worldhopper="hoid"]')).toHaveLength(0);
+
+    fireEvent.click(hoidToggle);
+    fireEvent.change(screen.getByRole('searchbox', { name: /story text/i }), {
+      target: { value: 'Pahn Kal Rebellion' },
+    });
+    expect(container.querySelectorAll('[data-worldhopper="hoid"]')).toHaveLength(0);
   });
 });

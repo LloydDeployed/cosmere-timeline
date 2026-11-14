@@ -1,0 +1,37 @@
+[
+  {
+    "id": "hoid",
+    "name": "Hoid",
+    "color": "#f4c36a",
+    "appearances": [
+      {
+        "eventId": "event-023",
+        "source": {
+          "label": "Elantris, 10th Anniversary Edition — Hoid postscript"
+        },
+        "note": "Story-level anchor; this does not assert an exact arrival or departure date."
+      },
+      {
+        "eventId": "event-037",
+        "source": {
+          "label": "Mistborn: The Final Empire — Hoid's informant scene"
+        },
+        "note": "Story-level anchor; this does not assert an exact arrival or departure date."
+      },
+      {
+        "eventId": "event-041",
+        "source": {
+          "label": "Warbreaker, chapter 32 — Siri's storyteller scene"
+        },
+        "note": "Story-level anchor; this does not assert an exact arrival or departure date."
+      },
+      {
+        "eventId": "event-056",
+        "source": {
+          "label": "The Way of Kings and Words of Radiance — Wit scenes"
+        },
+        "note": "Story-level anchor; this does not assert an exact arrival or departure date."
+      }
+    ]
+  }
+]

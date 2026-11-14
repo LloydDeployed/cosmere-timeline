@@ -22,6 +22,17 @@ necessarily spoiler-free. Character filtering likewise depends on the optional
 canonical `characters` array; the control stays disabled until events carry
 those tags.
 
+Worldhopper curves are derived from `src/data/worldhoppers.json`, which stores
+ordered appearance anchors by canonical event ID plus a primary-book source and
+limitation note. The SVG never stores hand-authored route geometry: pure journey
+and projection helpers connect only adjacent tagged appearances whose two event
+anchors remain visible. Filtering, hiding a lane, or moving an endpoint outside
+the viewport removes that segment rather than inventing a shortcut across the
+missing appearance. The initial Hoid anchors are deliberately story-level
+chronology markers, not claims about exact arrival or departure dates. The data
+contract supports additional travelers, but none should be added until their
+identity and spoiler scope can be represented explicitly.
+
 Approximate and unknown-precision dates use hollow markers and an `≈` label.
 Date ranges render as spans. Ordering-only events stay outside the numeric axis
 rather than being assigned an invented year.
@@ -36,7 +47,7 @@ rather than being assigned an invented year.
 - [ ] Filtering by series/books
 - [ ] Dynamic custom filtering
 - [ ] Links to Coppermind
-- [ ] World Hopper / Shard travels
+- [x] World Hopper travels
 - [ ] Condensing time spans without events
 
 ## Design

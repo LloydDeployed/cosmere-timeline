@@ -1,3 +1,5 @@
+import { projectWorldhopperPaths } from './timelineTravel';
+
 export const CHRONOLOGY_BOUNDS = { start: -1100, end: 16050 };
 export const MIN_VIEWPORT_SPAN = 25;
 
@@ -119,7 +121,14 @@ const makeTicks = (viewport, count = 8) => {
   return ticks;
 };
 
-export const createTimelineViewModel = ({ systems, events, activeSystemIds, viewport, width = 1000 }) => {
+export const createTimelineViewModel = ({
+  systems,
+  events,
+  activeSystemIds,
+  viewport,
+  worldhopperJourneys = [],
+  width = 1000,
+}) => {
   const plot = { left: 150, right: width - 50 };
   const plotWidth = plot.right - plot.left;
   const span = viewport.end - viewport.start;
@@ -171,6 +180,7 @@ export const createTimelineViewModel = ({ systems, events, activeSystemIds, view
     width,
     plot,
     lanes,
+    travelPaths: projectWorldhopperPaths({ journeys: worldhopperJourneys, lanes }),
     ticks: makeTicks(viewport).map((year) => ({ year, x: project(year) })),
     height: 126 + Math.max(lanes.length, 1) * 68,
   };
