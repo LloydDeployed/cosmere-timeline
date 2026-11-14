@@ -54,6 +54,18 @@ describe('timeline data contract', () => {
     );
   });
 
+  test('normalizes optional canonical character tags without inferring description text', () => {
+    const taggedEvents = [
+      { ...events[0], characters: ['Hoid', '  Kaladin  '] },
+      { ...events[1], events: 'Vin enters Kredik Shaw' },
+    ];
+    const canonical = normalizeCanonicalData({ books, shards, systems, events: taggedEvents });
+
+    expect(canonical.events[0].characters).toEqual(['Hoid', 'Kaladin']);
+    expect(canonical.events[1].characters).toEqual([]);
+    expect(() => validateCanonicalData(canonical)).not.toThrow();
+  });
+
   test('models point dates without blocking ranges or ordering-only dates', () => {
     expect(normalizeTimelineDate(42)).toEqual({
       kind: 'point',

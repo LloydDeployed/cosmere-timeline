@@ -91,6 +91,7 @@ const normalizeEvent = (event) => ({
   location: { system: event.location?.system ?? event.system },
   description: event.description ?? event.events,
   relatedWorks: normalizeStringArray(event.relatedWorks ?? event.books),
+  characters: normalizeStringArray(event.characters),
   shards: normalizeStringArray(event.shards),
   sources: asArray(event.sources).map(normalizeSource),
   spoilerScope: normalizeSpoilerScope(event.spoilerScope),
@@ -219,6 +220,7 @@ export const validateCanonicalData = (data) => {
       );
     }
     validateStringArray(event.relatedWorks, `events[${index}].relatedWorks`, errors);
+    validateStringArray(event.characters, `events[${index}].characters`, errors);
     validateStringArray(event.shards, `events[${index}].shards`, errors);
     if (!Array.isArray(event.sources)) {
       errors.push(`events[${index}].sources must be an array`);

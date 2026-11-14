@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import canonicalData from '../data/canonicalData';
 import TimelineViewport from './TimelineViewport';
@@ -6,9 +6,16 @@ import {
   CHRONOLOGY_BOUNDS,
   clampViewport,
   formatTimelineDate,
+  isEventInViewport,
   panViewport,
   zoomViewport,
 } from '../timeline/timelineProjection';
+import {
+  countSpoilerMetadata,
+  createEmptyFilters,
+  filterTimelineEvents,
+  getFilterOptions,
+} from '../timeline/timelineFilters';
 
 const formatControlValue = (value) => Number(value.toFixed(2));
 
@@ -18,10 +25,40 @@ function TimelineDisplay() {
     canonicalData.systems.map(({ id }) => id)
   );
   const [selectedEventId, setSelectedEventId] = useState(null);
+  const [filters, setFilters] = useState(createEmptyFilters);
+  const filterOptions = useMemo(() => getFilterOptions(canonicalData.events), []);
+  const spoilerMetadata = useMemo(() => countSpoilerMetadata(canonicalData.events), []);
+  const filteredEvents = useMemo(
+    () => filterTimelineEvents(canonicalData.events, filters),
+    [filters]
+  );
+  const eventsInActiveLanes = useMemo(
+    () => filteredEvents.filter((event) => activeSystemIds.includes(event.location.system)),
+    [activeSystemIds, filteredEvents]
+  );
+  const visibleEvents = useMemo(
+    () => eventsInActiveLanes.filter((event) => isEventInViewport(event, viewport)),
+    [eventsInActiveLanes, viewport]
+  );
   const selectedEvent = useMemo(
     () => canonicalData.events.find(({ id }) => id === selectedEventId) ?? null,
     [selectedEventId]
   );
+
+  useEffect(() => {
+    if (selectedEventId && !visibleEvents.some(({ id }) => id === selectedEventId)) {
+      setSelectedEventId(null);
+    }
+  }, [selectedEventId, visibleEvents]);
+
+  const updateFilter = (name, value) => {
+    setFilters((current) => ({ ...current, [name]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters(createEmptyFilters());
+    setActiveSystemIds(canonicalData.systems.map(({ id }) => id));
+  };
 
   const toggleSystem = (systemId) => {
     setActiveSystemIds((current) =>
@@ -62,6 +99,80 @@ function TimelineDisplay() {
 
   return (
     <Container>
+      <FilterSection aria-labelledby="filter-heading">
+        <FilterHeader>
+          <ControlHeading id="filter-heading">Filter events</ControlHeading>
+          <ClearButton type="button" onClick={clearFilters}>Clear filters</ClearButton>
+        </FilterHeader>
+        <FilterGrid>
+          <FilterField>
+            <label htmlFor="story-text">Story text</label>
+            <input
+              id="story-text"
+              type="search"
+              value={filters.storyText}
+              onChange={(event) => updateFilter('storyText', event.target.value)}
+              placeholder="Search event descriptions"
+            />
+            <small>Searches descriptions only, not character metadata.</small>
+          </FilterField>
+          <FilterField>
+            <label htmlFor="work-filter">Book or work</label>
+            <select
+              id="work-filter"
+              value={filters.work}
+              onChange={(event) => updateFilter('work', event.target.value)}
+            >
+              <option value="">All works</option>
+              {filterOptions.works.map((work) => <option key={work} value={work}>{work}</option>)}
+            </select>
+          </FilterField>
+          <FilterField>
+            <label htmlFor="character-filter">Character</label>
+            <select
+              id="character-filter"
+              value={filters.character}
+              disabled={filterOptions.characters.length === 0}
+              onChange={(event) => updateFilter('character', event.target.value)}
+            >
+              <option value="">All characters</option>
+              {filterOptions.characters.map((character) => (
+                <option key={character} value={character}>{character}</option>
+              ))}
+            </select>
+            {filterOptions.characters.length === 0 && (
+              <small>No events have canonical character tags yet.</small>
+            )}
+          </FilterField>
+          <FilterField>
+            <label htmlFor="shard-filter">Shard</label>
+            <select
+              id="shard-filter"
+              value={filters.shard}
+              onChange={(event) => updateFilter('shard', event.target.value)}
+            >
+              <option value="">All Shards</option>
+              {filterOptions.shards.map((shard) => <option key={shard} value={shard}>{shard}</option>)}
+            </select>
+          </FilterField>
+        </FilterGrid>
+        <SpoilerControl>
+          <input
+            id="hide-scoped-spoilers"
+            type="checkbox"
+            checked={filters.hideScopedSpoilers}
+            disabled={spoilerMetadata.scoped === 0}
+            onChange={(event) => updateFilter('hideScopedSpoilers', event.target.checked)}
+          />
+          <label htmlFor="hide-scoped-spoilers">Hide events with explicit spoiler metadata</label>
+        </SpoilerControl>
+        <MetadataNote>
+          {spoilerMetadata.scoped} of {canonicalData.events.length} events have explicit spoiler
+          metadata; {spoilerMetadata.unscoped} events lack explicit spoiler metadata. Unscoped does
+          not mean spoiler-free.
+        </MetadataNote>
+      </FilterSection>
+
       <section aria-labelledby="lane-heading">
         <ControlHeading id="lane-heading">World and system lanes</ControlHeading>
         <LaneControls>
@@ -82,6 +193,11 @@ function TimelineDisplay() {
           })}
         </LaneControls>
       </section>
+
+      <ResultStatus role="status" aria-label="Filter results" aria-live="polite">
+        {eventsInActiveLanes.length} matching {eventsInActiveLanes.length === 1 ? 'event' : 'events'} in
+        active lanes; {visibleEvents.length} in the current viewport.
+      </ResultStatus>
 
       <ViewportControls aria-label="Timeline viewport controls">
         <ControlButton type="button" onClick={() => pan(-1)} aria-label="Pan earlier">
@@ -127,7 +243,7 @@ function TimelineDisplay() {
 
       <TimelineViewport
         systems={canonicalData.systems}
-        events={canonicalData.events}
+        events={filteredEvents}
         activeSystemIds={activeSystemIds}
         viewport={viewport}
         selectedEventId={selectedEventId}
@@ -135,7 +251,7 @@ function TimelineDisplay() {
         onZoom={zoom}
       />
 
-      <SelectionStatus role="status" aria-live="polite">
+      <SelectionStatus role="status" aria-label="Selected event details" aria-live="polite">
         {selectedEvent
           ? `${formatTimelineDate(selectedEvent.date)} — ${selectedEvent.description}`
           : 'Select an event marker for its date and description.'}
@@ -147,6 +263,75 @@ function TimelineDisplay() {
 const Container = styled.div`
   width: min(1500px, 100%);
   margin: 0 auto;
+`;
+
+const FilterSection = styled.section`
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #182021;
+  border: 1px solid #445051;
+  border-radius: 0.5rem;
+  text-align: left;
+`;
+
+const FilterHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+`;
+
+const FilterGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.8rem;
+`;
+
+const FilterField = styled.div`
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+
+  label { color: #e5dfd1; font-size: 0.85rem; font-weight: 700; }
+  input, select {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.55rem;
+    color: #fff;
+    background: #101617;
+    border: 1px solid #687576;
+    border-radius: 0.25rem;
+  }
+  input:focus-visible, select:focus-visible { outline: 3px solid #f0b35a; outline-offset: 1px; }
+  select:disabled { color: #8f9a98; opacity: 0.72; }
+  small { color: #aab4b2; font-size: 0.72rem; line-height: 1.35; }
+`;
+
+const SpoilerControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+  color: #e5dfd1;
+
+  input { width: 1.15rem; height: 1.15rem; accent-color: #d59a47; }
+  input:disabled + label { color: #8f9a98; }
+`;
+
+const MetadataNote = styled.p`
+  margin: 0.45rem 0 0;
+  color: #aab4b2;
+  font-size: 0.75rem;
+`;
+
+const ClearButton = styled.button`
+  padding: 0.4rem 0.65rem;
+  color: #f8f4e9;
+  background: transparent;
+  border: 1px solid #687576;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  &:focus-visible { outline: 3px solid #f0b35a; outline-offset: 2px; }
 `;
 
 const ControlHeading = styled.h2`
@@ -227,6 +412,13 @@ const Legend = styled.p`
   color: #bfc7c6;
   font-size: 0.82rem;
   line-height: 1.45;
+  text-align: left;
+`;
+
+const ResultStatus = styled.p`
+  margin: 0.75rem 0;
+  color: #f4c36a;
+  font-size: 0.86rem;
   text-align: left;
 `;
 

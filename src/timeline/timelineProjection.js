@@ -96,6 +96,14 @@ export const formatTimelineDate = (date) => {
   return `${date.precision === 'exact' ? '' : '≈ '}${formatYear(date.value)}`;
 };
 
+export const isEventInViewport = (event, viewport) => {
+  if (event.date.kind === 'order') return true;
+  if (event.date.kind === 'range') {
+    return event.date.end >= viewport.start && event.date.start <= viewport.end;
+  }
+  return event.date.value >= viewport.start && event.date.value <= viewport.end;
+};
+
 const makeTicks = (viewport, count = 8) => {
   const span = viewport.end - viewport.start;
   const rawStep = span / count;
@@ -132,15 +140,7 @@ export const createTimelineViewModel = ({ systems, events, activeSystemIds, view
           uncertain: true,
         }));
       const numericEvents = systemEvents
-        .filter((event) => {
-          if (event.date.kind === 'point') {
-            return event.date.value >= viewport.start && event.date.value <= viewport.end;
-          }
-          if (event.date.kind === 'range') {
-            return event.date.end >= viewport.start && event.date.start <= viewport.end;
-          }
-          return false;
-        })
+        .filter((event) => event.date.kind !== 'order' && isEventInViewport(event, viewport))
         .map((event) => {
           const start = event.date.kind === 'point' ? event.date.value : event.date.start;
           const end = event.date.kind === 'point' ? null : event.date.end;

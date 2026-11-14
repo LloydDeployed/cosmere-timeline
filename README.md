@@ -11,6 +11,17 @@ lane buttons to show or hide systems, the earlier/later controls to pan, and the
 zoom controls or mouse wheel to change the visible year span. Numeric inputs
 allow direct viewport bounds.
 
+Event filters compose across structured book/work, character, Shard, and
+world/system fields. Story text search is intentionally limited to event
+descriptions; it is not treated as character metadata. Clearing filters restores
+all lanes but preserves the current viewport.
+
+Spoiler hiding uses only explicit event `spoilerScope` metadata. The interface
+reports metadata coverage because an event without a scope is unknown, not
+necessarily spoiler-free. Character filtering likewise depends on the optional
+canonical `characters` array; the control stays disabled until events carry
+those tags.
+
 Approximate and unknown-precision dates use hollow markers and an `≈` label.
 Date ranges render as spans. Ordering-only events stay outside the numeric axis
 rather than being assigned an invented year.
