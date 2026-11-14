@@ -23,8 +23,46 @@ describe('timeline viewport math', () => {
     expect(projection.breaks).toEqual([{ start: 100, end: 9000, x: 125 }]);
     expect(projection.project(0)).toBe(0);
     expect(projection.project(100)).toBeCloseTo(83.33);
+    expect(projection.project(4550)).toBeCloseTo(125);
     expect(projection.project(9000)).toBeCloseTo(166.67);
     expect(projection.project(10000)).toBe(1000);
+  });
+
+  test('removes projected ticks that would overlap inside condensed gaps', () => {
+    const model = createTimelineViewModel({
+      systems: [{ id: 'Roshar', name: 'Roshar', color: '#68a7d3' }],
+      events: [0, 100, 9000, 10000].map((value) => ({
+        id: `event-${value}`,
+        location: { system: 'Roshar' },
+        date: { kind: 'point', value, precision: 'exact', confidence: 'high' },
+        description: `Event at ${value}`,
+      })),
+      activeSystemIds: ['Roshar'],
+      viewport: { start: 0, end: 10000 },
+      width: 1000,
+    });
+
+    const spacings = model.ticks.slice(1).map((tick, index) => (
+      tick.x - model.ticks[index].x
+    ));
+    expect(spacings.every((spacing) => spacing >= 60)).toBe(true);
+  });
+
+  test('keeps Roshar years proportional inside the 6450–7958 condensed span', () => {
+    const projection = createTimeProjection({
+      viewport: { start: 6000, end: 8111 },
+      eventDates: [6000, 6400, 6450, 7958, 8111],
+      width: 800,
+    });
+    const gapStart = projection.project(6450);
+    const year7000 = projection.project(7000);
+    const gapEnd = projection.project(7958);
+
+    expect((year7000 - gapStart) / (gapEnd - gapStart)).toBeCloseTo(
+      (7000 - 6450) / (7958 - 6450)
+    );
+    expect(year7000).toBeLessThan(gapEnd);
+    expect(gapEnd).toBeLessThan(projection.project(8000));
   });
 
   test('linear projection preserves the original chronology coordinates', () => {

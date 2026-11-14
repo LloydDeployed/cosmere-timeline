@@ -368,7 +368,7 @@ function TimelineDisplay() {
 
       <Legend>
         {projectionMode === 'condensed'
-          ? 'Long event-free spans are condensed; break markers show where chronology skips.'
+          ? 'Long event-free spans are condensed proportionally; gold double-chevron markers identify each condensed quiet span.'
           : 'Chronology is shown at a linear scale, including long quiet eras.'}{' '}
         Hollow markers and ≈ labels preserve approximate or unknown date precision.
       </Legend>

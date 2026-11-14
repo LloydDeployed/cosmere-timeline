@@ -166,15 +166,20 @@ export const createTimeProjection = ({
     : [];
   const safeCondensedGap = Math.max(0, Number.isFinite(condensedGap) ? condensedGap : 0);
   const weightedSpan = span - candidates.reduce(
-    (total, gap) => total + (gap.end - gap.start - safeCondensedGap),
+    (total, gap) => {
+      const gapSpan = gap.end - gap.start;
+      return total + gapSpan - Math.min(safeCondensedGap, gapSpan);
+    },
     0
   );
   const projectRaw = (year) => {
     const clamped = Math.min(viewport.end, Math.max(viewport.start, year));
     const compressedBefore = candidates.reduce((total, gap) => {
       if (clamped <= gap.start) return total;
-      return total + Math.min(clamped, gap.end) - gap.start
-        - Math.min(safeCondensedGap, Math.max(0, clamped - gap.start));
+      const gapSpan = gap.end - gap.start;
+      const visualGapSpan = Math.min(safeCondensedGap, gapSpan);
+      const elapsedInGap = Math.min(clamped, gap.end) - gap.start;
+      return total + elapsedInGap * (1 - visualGapSpan / gapSpan);
     }, 0);
     return plotLeft + ((clamped - viewport.start - compressedBefore) / weightedSpan)
       * (plotRight - plotLeft);
@@ -207,6 +212,14 @@ const makeTicks = (viewport, count = 8) => {
   }
   return ticks;
 };
+
+const removeOverlappingTicks = (ticks, minimumSpacing = 60) => (
+  ticks.reduce((visible, tick) => {
+    const previous = visible[visible.length - 1];
+    if (!previous || tick.x - previous.x >= minimumSpacing) visible.push(tick);
+    return visible;
+  }, [])
+);
 
 export const createTimelineViewModel = ({
   systems,
@@ -272,6 +285,8 @@ export const createTimelineViewModel = ({
       };
     });
 
+  const ticks = makeTicks(viewport).map((year) => ({ year, x: project(year) }));
+
   return {
     width,
     plot,
@@ -281,7 +296,7 @@ export const createTimelineViewModel = ({
     },
     lanes,
     travelPaths: projectWorldhopperPaths({ journeys: worldhopperJourneys, lanes }),
-    ticks: makeTicks(viewport).map((year) => ({ year, x: project(year) })),
+    ticks: removeOverlappingTicks(ticks),
     height: 126 + Math.max(lanes.length, 1) * 68,
   };
 };
