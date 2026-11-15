@@ -104,19 +104,30 @@ describe('timeline viewport', () => {
     expect(Number(start.value)).toBeGreaterThan(Number(initialStart));
   });
 
-  test('toggles condensed chronology and exposes visible break markers', () => {
+  test('toggles the event-focused overview and opens a collapsed gap in linear detail', () => {
     const { container } = render(<App />);
 
-    expect(container.querySelectorAll('[data-testid="timeline-break"]').length).toBeGreaterThan(0);
-    const linearToggle = screen.getByRole('button', { name: /use linear chronology/i });
-    fireEvent.click(linearToggle);
-
-    expect(linearToggle).toHaveAttribute('aria-pressed', 'true');
     expect(container.querySelectorAll('[data-testid="timeline-break"]')).toHaveLength(0);
-    expect(screen.getByText(/chronology is shown at a linear scale/i)).toBeInTheDocument();
+    const overviewToggle = screen.getByRole('button', { name: /show event-focused overview/i });
+    fireEvent.click(overviewToggle);
 
-    fireEvent.click(screen.getByRole('button', { name: /condense quiet spans/i }));
+    expect(overviewToggle).toHaveAttribute('aria-pressed', 'true');
     expect(container.querySelectorAll('[data-testid="timeline-break"]').length).toBeGreaterThan(0);
+    expect(screen.getByText(/activity clusters use local linear scales/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole('button', { name: /collapsed quiet span/i })[0]);
+    expect(screen.getByRole('button', { name: /show event-focused overview/i })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
+    expect(container.querySelectorAll('[data-testid="timeline-break"]')).toHaveLength(0);
+
+    fireEvent.click(screen.getByRole('button', { name: /show event-focused overview/i }));
+    fireEvent.click(screen.getByRole('button', { name: /zoom in/i }));
+    expect(screen.getByRole('button', { name: /show event-focused overview/i })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
   });
 
   test('filters story text, reports visible results, and clears filters without resetting viewport', () => {

@@ -10,21 +10,26 @@ import {
 const bounds = { start: -100, end: 900 };
 
 describe('timeline viewport math', () => {
-  test('condenses only large event-free spans and exposes deterministic break markers', () => {
+  test('builds explicit fixed-width gaps between linear activity clusters', () => {
     const projection = createTimeProjection({
       viewport: { start: 0, end: 10000 },
       eventDates: [0, 100, 9000, 10000],
       width: 1000,
+      mode: 'overview',
       gapThreshold: 1000,
-      condensedGap: 100,
+      gapWidth: 100,
     });
 
-    expect(projection.mode).toBe('condensed');
-    expect(projection.breaks).toEqual([{ start: 100, end: 9000, x: 125 }]);
+    expect(projection.mode).toBe('overview');
+    expect(projection.gaps).toHaveLength(1);
+    expect(projection.gaps[0]).toMatchObject({ start: 100, end: 9000, duration: 8900 });
+    expect(projection.gaps[0].x2 - projection.gaps[0].x1).toBeCloseTo(100);
     expect(projection.project(0)).toBe(0);
-    expect(projection.project(100)).toBeCloseTo(83.33);
-    expect(projection.project(4550)).toBeCloseTo(125);
-    expect(projection.project(9000)).toBeCloseTo(166.67);
+    expect(projection.project(100)).toBeCloseTo(projection.gaps[0].x1);
+    expect(projection.project(4550)).toBeCloseTo(
+      (projection.gaps[0].x1 + projection.gaps[0].x2) / 2
+    );
+    expect(projection.project(9000)).toBeCloseTo(projection.gaps[0].x2);
     expect(projection.project(10000)).toBe(1000);
   });
 
@@ -40,12 +45,14 @@ describe('timeline viewport math', () => {
       activeSystemIds: ['Roshar'],
       viewport: { start: 0, end: 10000 },
       width: 1000,
+      projectionMode: 'overview',
     });
 
     const spacings = model.ticks.slice(1).map((tick, index) => (
       tick.x - model.ticks[index].x
     ));
     expect(spacings.every((spacing) => spacing >= 60)).toBe(true);
+    expect(model.ticks.some(({ year }) => year > 100 && year < 9000)).toBe(false);
   });
 
   test('keeps Roshar years proportional inside the 6450–7958 condensed span', () => {
@@ -53,16 +60,16 @@ describe('timeline viewport math', () => {
       viewport: { start: 6000, end: 8111 },
       eventDates: [6000, 6400, 6450, 7958, 8111],
       width: 800,
+      mode: 'overview',
     });
-    const gapStart = projection.project(6450);
-    const year7000 = projection.project(7000);
-    const gapEnd = projection.project(7958);
+    const gap = projection.gaps.find(({ start, end }) => start === 6450 && end === 7958);
 
-    expect((year7000 - gapStart) / (gapEnd - gapStart)).toBeCloseTo(
-      (7000 - 6450) / (7958 - 6450)
-    );
-    expect(year7000).toBeLessThan(gapEnd);
-    expect(gapEnd).toBeLessThan(projection.project(8000));
+    expect(gap).toMatchObject({ duration: 1508 });
+    expect(projection.project(6450)).toBe(gap.x1);
+    expect(projection.project(7958)).toBe(gap.x2);
+    expect(projection.project(7000)).toBeGreaterThan(gap.x1);
+    expect(projection.project(7000)).toBeLessThan(gap.x2);
+    expect(projection.project(8000)).toBeGreaterThan(gap.x2);
   });
 
   test('linear projection preserves the original chronology coordinates', () => {
@@ -75,6 +82,18 @@ describe('timeline viewport math', () => {
 
     expect(projection.breaks).toEqual([]);
     expect(projection.project(2500)).toBe(250);
+  });
+
+  test('uses linear chronology by default for detailed views', () => {
+    const projection = createTimeProjection({
+      viewport: { start: 0, end: 10000 },
+      eventDates: [0, 100, 9000, 10000],
+      width: 1000,
+    });
+
+    expect(projection.mode).toBe('linear');
+    expect(projection.gaps).toEqual([]);
+    expect(projection.project(4550)).toBe(455);
   });
 
   test('clamps reversed, undersized, and out-of-bounds viewports', () => {

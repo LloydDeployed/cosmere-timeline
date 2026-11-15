@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { createTimelineViewModel } from '../timeline/timelineProjection';
 
 const WIDTH = 1000;
+const formatGapNumber = new Intl.NumberFormat('en-US');
 
 const wrapText = (text, maxLength = 56) => {
   const words = text.split(/\s+/);
@@ -119,6 +120,82 @@ function SelectionCard({ event, color, x, y, plot }) {
   );
 }
 
+function OverviewGap({ gap, height, onOpen }) {
+  const center = (gap.x1 + gap.x2) / 2;
+  const label = `Collapsed quiet span from ${gap.start} to ${gap.end}, ${gap.duration} years`;
+  const open = () => onOpen(gap);
+
+  return (
+    <g
+      role="button"
+      tabIndex="0"
+      aria-label={label}
+      data-testid="timeline-break"
+      onClick={open}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          open();
+        }
+      }}
+      style={{ cursor: 'pointer' }}
+    >
+      <title>{label}. Open in linear detail.</title>
+      <rect
+        x={gap.x1}
+        y="36"
+        width={gap.x2 - gap.x1}
+        height={height - 64}
+        fill="#f4c36a"
+        opacity="0.08"
+      />
+      <line x1={gap.x1} x2={gap.x1} y1="36" y2={height - 28} stroke="#f4c36a" strokeWidth="2" />
+      <line x1={gap.x2} x2={gap.x2} y1="36" y2={height - 28} stroke="#f4c36a" strokeWidth="2" />
+      <path
+        d={`M ${center - 7} 36 l 7 8 l 7 -8 M ${center - 7} 44 l 7 8 l 7 -8`}
+        fill="none"
+        stroke="#f4c36a"
+        strokeWidth="2"
+        aria-hidden="true"
+      />
+      <text x={center} y="15" fill="#f4c36a" textAnchor="middle" fontSize="10" fontWeight="700">
+        {formatGapNumber.format(gap.duration)} yr gap
+      </text>
+      <text x={center} y="29" fill="#f4c36a" textAnchor="middle" fontSize="9">
+        {gap.start} → {gap.end}
+      </text>
+    </g>
+  );
+}
+
+function OverviewCluster({ cluster, height, onOpen }) {
+  const label = `Activity cluster from ${cluster.start} to ${cluster.end}`;
+  return (
+    <g
+      role="button"
+      tabIndex="0"
+      aria-label={label}
+      onClick={() => onOpen(cluster)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpen(cluster);
+        }
+      }}
+      style={{ cursor: 'zoom-in' }}
+    >
+      <title>{label}. Open in linear detail.</title>
+      <rect
+        x={cluster.x1}
+        y="36"
+        width={cluster.x2 - cluster.x1}
+        height={height - 64}
+        fill="transparent"
+      />
+    </g>
+  );
+}
+
 function TimelineViewport({
   systems,
   events,
@@ -129,6 +206,7 @@ function TimelineViewport({
   projectionMode,
   onSelectEvent,
   onZoom,
+  onOpenRange,
 }) {
   const descriptionId = useId();
   const model = useMemo(
@@ -166,14 +244,23 @@ function TimelineViewport({
       >
         <title>Cosmere chronology</title>
         <desc id={descriptionId}>
-          {model.projection.mode === 'condensed'
-            ? 'A numeric chronology with long event-free spans condensed and marked by visible breaks.'
+          {model.projection.mode === 'overview'
+            ? 'An event-focused overview with local linear activity clusters separated by labeled collapsed quiet spans.'
             : 'A linear numeric chronology.'}{' '}
           Curves connect adjacent, explicitly tagged worldhopper appearances. Select an event marker
           to read its date and description. Hold Control or Command while scrolling to zoom the
           chronology; ordinary scrolling continues through the page.
         </desc>
         <rect width={model.width} height={model.height} fill="#172021" rx="8" />
+
+        {model.projection.mode === 'overview' && model.projection.clusters.map((cluster) => (
+          <OverviewCluster
+            key={`cluster-${cluster.start}-${cluster.end}`}
+            cluster={cluster}
+            height={model.height}
+            onOpen={onOpenRange}
+          />
+        ))}
 
         <g aria-hidden="true">
           {model.ticks.map(({ year, x }) => (
@@ -184,17 +271,13 @@ function TimelineViewport({
           ))}
         </g>
 
-        {model.projection.breaks.map((gap) => (
-          <g key={`${gap.start}-${gap.end}`} data-testid="timeline-break" aria-label={`Chronology break from ${gap.start} to ${gap.end}`}>
-            <path
-              d={`M ${gap.x - 7} 34 l 7 8 l 7 -8 M ${gap.x - 7} 42 l 7 8 l 7 -8`}
-              fill="none"
-              stroke="#f4c36a"
-              strokeWidth="2"
-              aria-hidden="true"
-            />
-            <title>Chronology break: {gap.end - gap.start} event-free years</title>
-          </g>
+        {model.projection.gaps.map((gap) => (
+          <OverviewGap
+            key={`gap-${gap.start}-${gap.end}`}
+            gap={gap}
+            height={model.height}
+            onOpen={onOpenRange}
+          />
         ))}
 
         <g aria-hidden="true" data-testid="worldhopper-paths">

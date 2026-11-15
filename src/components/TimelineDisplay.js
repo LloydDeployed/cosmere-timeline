@@ -5,6 +5,7 @@ import TimelineViewport from './TimelineViewport';
 import {
   applyViewportBoundDraft,
   CHRONOLOGY_BOUNDS,
+  clampViewport,
   formatTimelineDate,
   isEventInViewport,
   panViewport,
@@ -72,7 +73,7 @@ function YearBoundField({ bound, label, value, onCommit }) {
 
 function TimelineDisplay() {
   const [viewport, setViewport] = useState(CHRONOLOGY_BOUNDS);
-  const [projectionMode, setProjectionMode] = useState('condensed');
+  const [projectionMode, setProjectionMode] = useState('linear');
   const [hideEmptyLanes, setHideEmptyLanes] = useState(false);
   const [activeSystemIds, setActiveSystemIds] = useState(() =>
     canonicalData.systems.map(({ id }) => id)
@@ -159,6 +160,7 @@ function TimelineDisplay() {
   };
 
   const zoom = (factor) => {
+    if (projectionMode === 'overview' && factor < 1) setProjectionMode('linear');
     setViewport((current) =>
       zoomViewport(
         current,
@@ -177,6 +179,11 @@ function TimelineDisplay() {
         CHRONOLOGY_BOUNDS
       )
     );
+  };
+
+  const openRangeInLinearDetail = ({ start, end }) => {
+    setProjectionMode('linear');
+    setViewport(clampViewport({ start, end }, CHRONOLOGY_BOUNDS));
   };
 
   return (
@@ -331,10 +338,12 @@ function TimelineDisplay() {
       <ViewportControls aria-label="Timeline viewport controls">
         <ControlButton
           type="button"
-          aria-pressed={projectionMode === 'linear'}
-          onClick={() => setProjectionMode((current) => (current === 'linear' ? 'condensed' : 'linear'))}
+          aria-pressed={projectionMode === 'overview'}
+          onClick={() => setProjectionMode((current) => (
+            current === 'linear' ? 'overview' : 'linear'
+          ))}
         >
-          {projectionMode === 'linear' ? 'Condense quiet spans' : 'Use linear chronology'}
+          {projectionMode === 'linear' ? 'Show event-focused overview' : 'Use linear chronology'}
         </ControlButton>
         <ControlGroup role="group" aria-label="Pan timeline">
           <ControlButton type="button" onClick={() => pan(-1)} aria-label="Pan earlier">
@@ -367,8 +376,8 @@ function TimelineDisplay() {
       </ViewportControls>
 
       <Legend>
-        {projectionMode === 'condensed'
-          ? 'Long event-free spans are condensed proportionally; gold double-chevron markers identify each condensed quiet span.'
+        {projectionMode === 'overview'
+          ? 'Activity clusters use local linear scales. Gold labeled gap blocks explicitly collapse quiet spans; open one for linear detail.'
           : 'Chronology is shown at a linear scale, including long quiet eras.'}{' '}
         Hollow markers and ≈ labels preserve approximate or unknown date precision.
       </Legend>
@@ -383,6 +392,7 @@ function TimelineDisplay() {
         projectionMode={projectionMode}
         onSelectEvent={setSelectedEventId}
         onZoom={zoom}
+        onOpenRange={openRangeInLinearDetail}
       />
 
       <SelectionStatus role="status" aria-label="Selected event details" aria-live="polite">
